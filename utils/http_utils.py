@@ -3,7 +3,7 @@ import requests
 def http_get(url):
     try:
         headers = {
-            "User-Agent": "Clash/1.0.0"
+            "User-Agent": "FlClash/v0.8.90 clash-verge"
         }
         response = requests.get(url, headers=headers, timeout=30)
         response.raise_for_status()

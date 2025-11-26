@@ -222,7 +222,7 @@ def process_proxy_source(proxy_source, user_config_map, req):
     if content is None:
         logger.error(f"Request URL: {req.url}, IP: {http_utils.get_request_ip(req)}, Subscription URL: {url}, Failed to fetch subscription")
         return None, None, None
-
+    
     print(f"Got subscription for {name}: {url}")
     
     filter_proxy_name = user_config_map.get("filter-proxy-name", [])
