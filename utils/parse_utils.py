@@ -2,9 +2,12 @@ import base64
 import json
 import re
 import yaml
+import logging
 from urllib.parse import urlparse, parse_qs, unquote
+logger = logging.getLogger(__name__)
 
 def get_base64_decode(s):
+    # 尝试解码 Base64（自动补齐 padding，支持 URL 安全）
     try:
         # Add padding if needed
         padding = 4 - (len(s) % 4)
@@ -23,10 +26,11 @@ def get_base64_decode(s):
         return None
 
 def parse_base64_proxy(proxy_body, filter_proxy_name, filter_proxy_server):
+    # 解析 Base64 订阅并进行过滤
     try:
         base64_proxy_arr = parse_base64_proxy_arr(proxy_body)
         if not base64_proxy_arr:
-            return None, Exception("Subscription Proxy info base64 parse failed")
+            return None, Exception("订阅代理信息 Base64 解析失败")
         
         filter_proxy_arr = filter_un_add_proxy_server(base64_proxy_arr, filter_proxy_name, filter_proxy_server)
         return filter_proxy_arr, None
@@ -34,15 +38,16 @@ def parse_base64_proxy(proxy_body, filter_proxy_name, filter_proxy_server):
         return None, e
 
 def parse_yaml_proxy(proxy_body, filter_proxy_name, filter_proxy_server):
+    # 解析 YAML 订阅并进行过滤
     try:
         try:
             proxy_rule = yaml.safe_load(proxy_body)
         except Exception as e:
-            print(f"YAML parse error: {e}")
-            return None, Exception("Subscription Proxy info yaml parse failed")
+            print(f"YAML 解析错误: {e}")
+            return None, Exception("订阅代理信息 YAML 解析失败")
             
         if not proxy_rule:
-             return None, Exception("Subscription Proxy info yaml parse failed (empty)")
+             return None, Exception("订阅代理信息 YAML 解析失败（空内容）")
 
         proxy_server_arr = []
         if proxy_rule.get("proxies"):
@@ -57,6 +62,7 @@ def parse_yaml_proxy(proxy_body, filter_proxy_name, filter_proxy_server):
         return None, e
 
 def parse_base64_proxy_arr(base64_proxy_bytes):
+    # 将 Base64 订阅文本逐行解析为代理节点
     try:
         base64_proxy_str = base64_proxy_bytes.decode('utf-8')
         proxy_str_arr = base64_proxy_str.split('\n')
@@ -107,7 +113,7 @@ def parse_base64_proxy_arr(base64_proxy_bytes):
                             
                         proxy_arr.append(proxy_map)
                     except Exception as e:
-                        print(f"Error parsing vmess: {e}")
+                        print(f"解析 vmess 节点失败: {e}")
                         
             elif proxy_str.startswith("vless://"):
                 try:
@@ -154,7 +160,7 @@ def parse_base64_proxy_arr(base64_proxy_bytes):
                     
                     proxy_arr.append(proxy_map)
                 except Exception as e:
-                    print(f"Error parsing vless: {e}")
+                    print(f"解析 vless 节点失败: {e}")
 
             elif proxy_str.startswith("trojan://"):
                 try:
@@ -175,7 +181,7 @@ def parse_base64_proxy_arr(base64_proxy_bytes):
                         
                     proxy_arr.append(proxy_map)
                 except Exception as e:
-                    print(f"Error parsing trojan: {e}")
+                    print(f"解析 trojan 节点失败: {e}")
                     
             elif proxy_str.startswith("ss://"):
                 try:
@@ -202,11 +208,11 @@ def parse_base64_proxy_arr(base64_proxy_bytes):
                         
                         proxy_arr.append(proxy_map)
                 except Exception as e:
-                    print(f"Error parsing ss: {e}")
+                    print(f"解析 ss 节点失败: {e}")
                     
         return proxy_arr
     except Exception as e:
-        print(f"Error parsing base64 proxy arr: {e}")
+        print(f"解析 Base64 订阅失败: {e}")
         return None
 
 def filter_un_add_proxy_server(proxy_server_arr, filter_proxy_name, filter_proxy_server):
@@ -220,10 +226,11 @@ def filter_un_add_proxy_server(proxy_server_arr, filter_proxy_name, filter_proxy
             for filter_name in filter_proxy_name:
                 try:
                     if re.search(filter_name, proxy.get("name", "")):
+                        logger.info(f"过滤代理名称: 模式={filter_name}, 节点={proxy.get('name','')}")
                         should_filter = True
                         break
-                except:
-                    pass
+                except Exception as e:
+                    logger.warning(f"代理名称过滤正则无效: 模式={filter_name}, 错误={e}")
         
         if should_filter:
             continue
@@ -232,6 +239,7 @@ def filter_un_add_proxy_server(proxy_server_arr, filter_proxy_name, filter_proxy
         if filter_proxy_server:
             for server in filter_proxy_server:
                 if server == proxy.get("server"):
+                    logger.info(f"过滤代理服务器: server={server}, 节点={proxy.get('name','')}")
                     should_filter = True
                     break
         
@@ -263,6 +271,7 @@ def generate_proxy_name_to_group(proxy_groups, proxy_name_arr, filter_proxy_grou
         if filter_proxy_group_arr:
             for filter_name in filter_proxy_group_arr:
                 if filter_name == proxy_group.get("name"):
+                    logger.info(f"过滤代理组: 组名={proxy_group.get('name','')}")
                     should_filter = True
                     break
         

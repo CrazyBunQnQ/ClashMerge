@@ -1,4 +1,6 @@
 import requests
+import logging
+logger = logging.getLogger(__name__)
 
 def http_get(url):
     try:
@@ -9,7 +11,7 @@ def http_get(url):
         response.raise_for_status()
         return response.content
     except Exception as e:
-        print(f"Error fetching URL {url}: {e}")
+        logger.error(f"请求订阅失败: url={url}, 错误={e}")
         return None
 
 def get_request_ip(request):

@@ -19,10 +19,10 @@ log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log')
 os.makedirs(log_dir, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
-    format='TRACE: %(asctime)s %(message)s',
+    format='%(asctime)s %(message)s',
     datefmt='%Y/%m/%d %H:%M:%S',
     handlers=[
-        logging.FileHandler(os.path.join(log_dir, 'errors.txt')),
+        logging.FileHandler(os.path.join(log_dir, 'log.txt')),
         logging.StreamHandler()
     ]
 )
@@ -30,17 +30,20 @@ logger = logging.getLogger(__name__)
 
 @app.route('/parse')
 def parse_rule():
+    # 请求入口：解析用户参数，拉取订阅并输出合并后的配置
     user_config_map, base_rule_map, done = parse_request_params(request)
     if done:
-        return "Error parsing request params", 400
+        return "解析请求参数失败", 400
 
+    # 并发拉取订阅，解析代理与代理组
     proxy_arr, proxy_group_arr, proxy_name_arr, done2 = get_proxies(user_config_map, request)
     if done2:
-        return "Error getting proxies", 500
+        return "获取代理信息失败", 500
 
     return output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, proxy_name_arr)
 
 def parse_request_params(req):
+    # 解析请求参数与用户配置，加载基础规则模板
     config_file_name = req.args.get("name")
     if not config_file_name:
         return None, None, True
@@ -55,10 +58,10 @@ def parse_request_params(req):
         
         user_config_map = config_utils.load_config(config_path)
         if user_config_map is None:
-            logger.error("Failed to read config file")
+            logger.error("读取配置文件失败")
             return None, None, True
     except Exception as e:
-        logger.error(f"error: {e}")
+        logger.error(f"错误: {e}")
         return None, None, True
 
     base_config_name = req.args.get("baseName")
@@ -71,13 +74,13 @@ def parse_request_params(req):
                     base_config_request_url = base_config.get("url")
                     break
     else:
-        logger.error(f"Request URL: {req.url}, IP: {http_utils.get_request_ip(req)}, No base config name provided")
+        logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 未提供基础规则名称")
         return None, None, True
 
     if not base_config_request_url:
-        logger.error(f"Request URL: {req.url}, IP: {http_utils.get_request_ip(req)}, Base config not found")
+        logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 未找到基础规则源")
 
-    # Hardcoded base rule body as in Go code
+    # 内置基础规则模板（示例）
     base_rule_body = """#---------------------------------------------------#
 ## 配置文件需要放置在 $HOME/.config/clash/config.yml
 ##
@@ -180,13 +183,14 @@ dns:
     try:
         base_rule_map = yaml.safe_load(base_rule_body)
     except Exception as e:
-        logger.error(f"error: {e}")
-        logger.error("Failed to parse base rule")
+        logger.error(f"错误: {e}")
+        logger.error("解析基础规则失败")
         return None, None, True
 
     return user_config_map, base_rule_map, False
 
 def get_proxies(user_config_map, req):
+    # 并发处理订阅源，生成代理列表与代理组
     pull_proxy_source = user_config_map.get("pull-proxy-source")
     if not pull_proxy_source:
         return None, None, None, True
@@ -210,20 +214,21 @@ def get_proxies(user_config_map, req):
                 if pn_arr:
                     proxy_name_arr.extend(pn_arr)
             except Exception as exc:
-                logger.error(f'{source.get("name")} generated an exception: {exc}')
+                logger.error(f"订阅源异常: 名称={source.get('name')}, 错误={exc}")
 
     return proxy_arr, proxy_group_arr, proxy_name_arr, False
 
 def process_proxy_source(proxy_source, user_config_map, req):
+    # 处理单个订阅源：拉取、解析、过滤并生成代理组
     url = proxy_source.get("url")
     name = proxy_source.get("name")
     
     content = http_utils.http_get(url)
     if content is None:
-        logger.error(f"Request URL: {req.url}, IP: {http_utils.get_request_ip(req)}, Subscription URL: {url}, Failed to fetch subscription")
+        logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 订阅地址: {url}, 拉取订阅失败")
         return None, None, None
     
-    print(f"Got subscription for {name}: {url}")
+    logger.info(f"订阅拉取成功: 名称={name}, 地址={url}")
     
     filter_proxy_name = user_config_map.get("filter-proxy-name", [])
     filter_proxy_server = user_config_map.get("filter-proxy-server", [])
@@ -238,7 +243,7 @@ def process_proxy_source(proxy_source, user_config_map, req):
         # Not base64, try yaml
         yaml_proxy_arr, err = parse_utils.parse_yaml_proxy(content, filter_proxy_name, filter_proxy_server)
         if err:
-             logger.error(f"Request URL: {req.url}, IP: {http_utils.get_request_ip(req)}, Subscription URL: {url}, Failed to parse as base64 or yaml")
+             logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 订阅地址: {url}, 解析为 Base64 或 YAML 失败")
              return None, None, None
              
         proxy_group_map, temp_proxy_name_arr = parse_utils.generate_group_and_proxy_name_arr(yaml_proxy_arr, name)
@@ -247,7 +252,7 @@ def process_proxy_source(proxy_source, user_config_map, req):
              return yaml_proxy_arr, proxy_group_map, temp_proxy_name_arr
         return None, None, None
     
-    # Is base64
+    # Base64 订阅
     base64_proxy_arr, err = parse_utils.parse_base64_proxy(content, filter_proxy_name, filter_proxy_server)
     if err:
         return None, None, None
@@ -261,20 +266,21 @@ def process_proxy_source(proxy_source, user_config_map, req):
 
 
 def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, proxy_name_arr):
+    # 合并输出最终 Clash 配置
     output_config = {}
     
-    # Simple fields
+    # 简单字段覆盖/合并
     for field in ["port", "socks-port", "redir-port", "mixed-port", "allow-lan", "bind-address", "mode", "log-level", "ipv6", "external-controller", "external-ui", "secret", "interface-name"]:
         val = config_utils.get_config_field_value(field, user_config_map, base_rule_map)
         if val is not None:
             output_config[field] = val
             
-    # Authentication
+    # 认证信息
     auth = config_utils.get_config_field_value("authentication", user_config_map, base_rule_map)
     if auth:
         output_config["authentication"] = auth
         
-    # Hosts & DNS
+    # Hosts 与 DNS
     hosts = config_utils.get_config_field_value("hosts", user_config_map, base_rule_map)
     if hosts:
         output_config["hosts"] = hosts
@@ -283,13 +289,13 @@ def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, pro
     if dns:
         output_config["dns"] = dns
         
-    # Rules
+    # 规则
     output_config["rules"] = config_utils.get_config_field_merge_value_arr("rules", user_config_map, base_rule_map)
     
-    # Rule Providers
+    # 规则提供者
     output_config["rule-providers"] = config_utils.get_config_field_merge_value_map("rule-providers", user_config_map, base_rule_map)
     
-    # Proxy Providers
+    # 代理提供者
     output_config["proxy-providers"] = config_utils.get_config_field_merge_value_map("proxy-providers", user_config_map, base_rule_map)
     
     filter_proxy_provider = user_config_map.get("filter-proxy-providers", [])
@@ -298,7 +304,7 @@ def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, pro
             if provider_name in filter_proxy_provider:
                 del output_config["proxy-providers"][provider_name]
 
-    # Proxies
+    # 代理列表
     user_proxies = user_config_map.get("proxies", [])
     output_user_proxies_map = []
     if user_proxies:
@@ -307,7 +313,7 @@ def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, pro
     output_user_proxies_map.extend(proxy_arr)
     output_config["proxies"] = output_user_proxies_map
     
-    # Proxy Groups
+    # 代理组
     filter_proxy_group = user_config_map.get("filter-proxy-groups", [])
     output_proxy_group_map = []
     
@@ -348,6 +354,6 @@ if __name__ == '__main__':
     if len(sys.argv) >= 2:
         port = int(sys.argv[1])
         
-    print(f"Service started, port: {port}")
-    print("parse service started")
+    print(f"服务启动，端口: {port}")
+    print("规则解析服务已启动")
     app.run(host='0.0.0.0', port=port)
