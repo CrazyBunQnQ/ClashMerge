@@ -69,16 +69,23 @@ def parse_request_params(req):
 
     if base_config_name:
         if "base-config" in user_config_map:
+            found = False
             for base_config in user_config_map["base-config"]:
                 if base_config.get("name") == base_config_name:
                     base_config_request_url = base_config.get("url")
+                    logger.info(f"基础配置已选择: 名称={base_config_name}, 地址={base_config_request_url}")
+                    found = True
                     break
+            if not found:
+                logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 基础配置未找到: 名称={base_config_name}")
+                return None, None, True
     else:
         logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 未提供基础规则名称")
         return None, None, True
 
     if not base_config_request_url:
         logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 未找到基础规则源")
+        return None, None, True
 
     # 内置基础规则模板（示例）
     base_rule_body = """#---------------------------------------------------#
@@ -180,12 +187,26 @@ dns:
       - 240.0.0.0/4
 """
     
-    try:
-        base_rule_map = yaml.safe_load(base_rule_body)
-    except Exception as e:
-        logger.error(f"错误: {e}")
-        logger.error("解析基础规则失败")
-        return None, None, True
+    base_rule_map = None
+    if base_config_request_url:
+        body_bytes = http_utils.http_get(base_config_request_url)
+        if body_bytes is not None:
+            try:
+                base_rule_map = yaml.safe_load(body_bytes.decode('utf-8', errors='ignore'))
+                logger.info(f"使用远程基础规则: 名称={base_config_name}, 地址={base_config_request_url}")
+            except Exception as e:
+                logger.error(f"解析远程基础规则失败: 错误={e}")
+        else:
+            logger.error(f"拉取远程基础规则失败: 地址={base_config_request_url}")
+
+    if base_rule_map is None:
+        try:
+            base_rule_map = yaml.safe_load(base_rule_body)
+            logger.info("使用内置基础规则模板进行合并输出")
+        except Exception as e:
+            logger.error(f"错误: {e}")
+            logger.error("解析基础规则失败")
+            return None, None, True
 
     return user_config_map, base_rule_map, False
 
