@@ -11,6 +11,7 @@ from utils import config_utils
 from utils import http_utils
 from utils import parse_utils
 from routes.parse import parse_bp
+from routes.config import config_bp
 
 app = Flask(__name__)
 
@@ -28,6 +29,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 app.register_blueprint(parse_bp)
+app.register_blueprint(config_bp)
 
 if __name__ == '__main__':
     port = 6789
