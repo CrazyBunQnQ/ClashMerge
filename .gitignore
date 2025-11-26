@@ -3,3 +3,4 @@
 log/*
 config/*
 !config/.config.yaml
+__pycache__
