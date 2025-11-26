@@ -40,21 +40,24 @@ def config_ui():
   <meta charset='utf-8'>
   <title>配置编辑</title>
   <style>
-    body {{ margin: 0; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'; background: #f7f7f8; color: #1f2328; }}
-    .card {{ max-width: 960px; margin: 0 auto; background: #fff; border: 1px solid #e6e8eb; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }}
-    .header {{ padding: 16px 20px; border-bottom: 1px solid #e6e8eb; font-weight: 600; }}
-    .content {{ padding: 20px; }}
-    .row {{ display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }}
-    input[type=text] {{ flex: 1; padding: 8px 10px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 14px; }}
-    button {{ padding: 8px 14px; border: 1px solid #1f883d; background: #1f883d; color: #fff; border-radius: 8px; font-size: 14px; cursor: pointer; }}
-    button.secondary {{ border-color: #0969da; background: #0969da; }}
-    textarea {{ width: 100%; height: 420px; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono'; font-size: 13px; line-height: 1.5; resize: vertical; }}
-    .status {{ margin-top: 10px; min-height: 24px; font-size: 13px; }}
+    :root {{ --bg:#0b0d10; --card:#0f141b; --border:#1f2a36; --text:#e6edf3; --muted:#9da7b1; --primary:#1f883d; --primary-contrast:#ffffff; --secondary:#4493f8; }}
+    body[data-theme="light"] {{ --bg:#f7f7f8; --card:#ffffff; --border:#e6e8eb; --text:#1f2328; --muted:#59636e; --primary:#1f883d; --primary-contrast:#ffffff; --secondary:#0969da; }}
+    body {{ margin:0; padding:24px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji'; background:var(--bg); color:var(--text); }}
+    .card {{ max-width:960px; margin:0 auto; background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:0 1px 2px rgba(0,0,0,0.15); }}
+    .header {{ padding:16px 20px; border-bottom:1px solid var(--border); font-weight:600; display:flex; justify-content:space-between; align-items:center; }}
+    .content {{ padding:20px; }}
+    .row {{ display:flex; gap:12px; align-items:center; margin-bottom:12px; }}
+    input[type=text] {{ flex:1; padding:8px 10px; border:1px solid var(--border); background:transparent; color:var(--text); border-radius:8px; font-size:14px; }}
+    button {{ padding:8px 14px; border:1px solid var(--primary); background:var(--primary); color:var(--primary-contrast); border-radius:8px; font-size:14px; cursor:pointer; }}
+    button.secondary {{ border-color:var(--secondary); background:var(--secondary); }}
+    button.ghost {{ border-color:var(--border); background:transparent; color:var(--text); }}
+    textarea {{ width:100%; height:420px; padding:10px; border:1px solid var(--border); background:transparent; color:var(--text); border-radius:8px; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono'; font-size:13px; line-height:1.5; resize:vertical; }}
+    .status {{ margin-top:10px; min-height:24px; font-size:13px; color:var(--muted); }}
   </style>
 </head>
 <body>
   <div class='card'>
-    <div class='header'>在线编辑配置</div>
+    <div class='header'>在线编辑配置 <button id='theme' class='ghost'>切换主题</button></div>
     <div class='content'>
       <div class='row'>
         <input id='name' type='text' placeholder='文件名，不含后缀' value='{name}'>
@@ -70,7 +73,11 @@ def config_ui():
     const nameInput = document.getElementById('name');
     const contentEl = document.getElementById('content');
     const statusEl = document.getElementById('status');
+    const themeBtn = document.getElementById('theme');
     function setStatus(msg, ok=true) {{ statusEl.textContent = msg; statusEl.style.color = ok ? '#1f883d' : '#d1242f'; }}
+    function applyTheme(t) {{ document.body.setAttribute('data-theme', t); localStorage.setItem('theme', t); themeBtn.textContent = t==='dark' ? '切换到亮色' : '切换到暗色'; }}
+    const initTheme = (localStorage.getItem('theme') || qs.get('theme') || 'dark');
+    applyTheme(initTheme);
     async function load() {{
       const n = nameInput.value.trim();
       if (!n) {{ setStatus('请输入文件名', false); return; }}
@@ -95,6 +102,7 @@ def config_ui():
     }}
     document.getElementById('load').addEventListener('click', load);
     document.getElementById('save').addEventListener('click', save);
+    themeBtn.addEventListener('click', () => {{ applyTheme(document.body.getAttribute('data-theme')==='dark' ? 'light' : 'dark'); }});
     if (qs.get('name')) {{ load(); }}
   </script>
 </body>
