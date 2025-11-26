@@ -1,38 +1,22 @@
-# Use the official Golang image as the builder
-FROM golang:1.20.3-alpine as builder
+FROM python:3.12-slim
 
-# Enable CGO to use C libraries (set to 0 to disable it)
-# We set it to 0 to build a fully static binary for our final image
-ENV CGO_ENABLED=0
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Shanghai
+RUN apt-get update && apt-get install -y --no-install-recommends tzdata \
+    && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# Copy the Go Modules manifests (go.mod and go.sum files)
-COPY go.mod go.sum ./
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Download the dependencies
-RUN go mod download
-
-# Copy the source code
 COPY . .
 
-# Build the Go application and output the binary to /app/ChatGPT-Proxy-V4
-RUN go build -o /app/clashmege .
-
-# Use a scratch image as the final distroless image
-#FROM scratch
-FROM grafana/alpine:3.15.4
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the built Go binary from the builder stage
-#COPY ./ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /app/clashmege /app/clashmege
-
-# Expose the port where the application is running
 EXPOSE 6789
 
-# Start the application
-CMD [ "./clashmege" ]
+CMD ["python", "main.py", "6789"]
