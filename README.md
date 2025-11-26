@@ -50,7 +50,7 @@
 1. 依赖环境
    本项目需要 `Python 3` 环境。
    ```bash
-   pip install flask pyyaml requests
+   pip install -r requirements.txt
    ```
 
 2. 配置文件
