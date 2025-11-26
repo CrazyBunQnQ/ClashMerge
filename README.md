@@ -60,7 +60,7 @@
 3. 运行
    在项目根目录下运行：
    ```bash
-   python3 python/main.py [Port]
+   python main.py [Port]
    ```
    `Port` 是你服务器要开启的端口，默认为 6789。
 
@@ -68,7 +68,7 @@
    然后访问你的 `http://ip:port/parse?name=你的配置&baseName=BaseRuleName`。 `你的配置` 这个就是上面操作你自己更改的配置文件名称（不包含 `.yaml` 后缀），`BaseRuleName` 这个名字就是在配置文件中 `base-config` 节点下的 `name`。
 
 5. 结果
-   如果没问题，就可以看到输出配置文件，如果有问题去 `python/log/errors.txt` 查看日志文件。
+   如果没问题，就可以看到输出配置文件，如果有问题去 `log/log.txt` 查看日志文件。
 
 例如: 
 
@@ -79,11 +79,34 @@
 ![目录结构](dir.png)
 
 ```shell
-python3 python/main.py 6789
+python main.py 6789
 # 服务启动，端口：6789
 ```
 
 访问 `http://localhost:6789/parse?name=template&baseName=clash-config` 即可获取合并后的 Clash 配置文件
+接口路由已拆分，当前 `/parse` 由 `routes/parse.py` 注册蓝图并委托到 `services/parser_service.py` 完成解析与合并。
+
+#### 新增接口指南
+- 在 `routes` 新建路由文件，定义 `Blueprint` 与路由；在 `services` 新建对应服务模块实现业务逻辑。
+- 在 `main.py` 中 `register_blueprint` 引入新蓝图。
+- 示例：
+  ```python
+  # routes/my.py
+  from flask import Blueprint, request
+  from services import my_service
+
+  my_bp = Blueprint("my", __name__)
+
+  @my_bp.route("/my", methods=["POST"])
+  def create():
+      data = request.get_json()
+      return my_service.create(data)
+  ```
+  在 `main.py` 中：
+  ```python
+  from routes.my import my_bp
+  app.register_blueprint(my_bp)
+  ```
 该地址直接在 Clash 中使用即可，包括订阅的节点以及自定义规则等，详见 [配置文件说明](config/template.yaml)
 
 ---
