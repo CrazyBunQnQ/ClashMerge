@@ -337,34 +337,48 @@ def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, pro
     # 代理组
     filter_proxy_group = user_config_map.get("filter-proxy-groups", [])
     output_proxy_group_map = []
-    
-    output_proxy_group_map.extend(proxy_group_arr)
+    # 忽略订阅生成的代理组，仅保留用户自定义代理组
     
     user_config_proxy_groups = user_config_map.get("proxy-groups")
     if user_config_proxy_groups:
         user_config_proxy_group_map_arr = parse_utils.generate_proxy_name_to_group(user_config_proxy_groups, proxy_name_arr, filter_proxy_group)
         output_proxy_group_map.extend(user_config_proxy_group_map_arr)
         
-    base_rule_proxy_groups = base_rule_map.get("proxy-groups")
-    if base_rule_proxy_groups:
-        base_rule_proxy_group_map_arr = parse_utils.generate_proxy_name_to_group(base_rule_proxy_groups, proxy_name_arr, filter_proxy_group)
+    # 忽略基础规则模板中的代理组
         
-        none_select_group_name = []
-        for proxy_group_map in base_rule_proxy_group_map_arr:
-            if proxy_group_map.get("type") != "select":
-                none_select_group_name.append(proxy_group_map.get("name"))
-                
-        for idx, proxy_group_map in enumerate(base_rule_proxy_group_map_arr):
-            if proxy_group_map.get("type") == "select":
-                current_proxies = base_rule_proxy_group_map_arr[idx].get("proxies", [])
-                # Prepend none_select_group_name
-                new_proxies = list(none_select_group_name)
-                new_proxies.extend(current_proxies)
-                base_rule_proxy_group_map_arr[idx]["proxies"] = new_proxies
-                
-        output_proxy_group_map.extend(base_rule_proxy_group_map_arr)
-        
-    output_config["proxy-groups"] = output_proxy_group_map
+    # 去重代理组：同名且同类型合并代理列表；类型不同则重命名
+    def _dedupe_groups(groups):
+        name_index = {}
+        result = []
+        for g in groups:
+            name = g.get("name")
+            if name not in name_index:
+                result.append(g)
+                name_index[name] = len(result) - 1
+                continue
+            idx = name_index[name]
+            prev = result[idx]
+            if prev.get("type") == g.get("type"):
+                p1 = prev.get("proxies", [])
+                p2 = g.get("proxies", [])
+                if not isinstance(p1, list):
+                    p1 = [p1]
+                if not isinstance(p2, list):
+                    p2 = [p2]
+                merged = list(dict.fromkeys(p1 + p2))
+                prev["proxies"] = merged
+                logger.warning(f"代理组重复: 组名={name}, 已合并代理列表")
+            else:
+                new_name = name
+                while new_name in name_index:
+                    new_name += "$"
+                g["name"] = new_name
+                result.append(g)
+                name_index[new_name] = len(result) - 1
+                logger.warning(f"代理组重复: 原组名={name}, 类型冲突，已重命名为 {new_name}")
+        return result
+
+    output_config["proxy-groups"] = _dedupe_groups(output_proxy_group_map)
     
     # Custom YAML dumper to handle None values as empty or omit them?
     # Standard yaml dump should be fine, but let's make sure it looks good
