@@ -2,7 +2,10 @@ import requests
 
 def http_get(url):
     try:
-        response = requests.get(url, timeout=30)
+        headers = {
+            "User-Agent": "Clash/1.0.0"
+        }
+        response = requests.get(url, headers=headers, timeout=30)
         response.raise_for_status()
         return response.content
     except Exception as e:
