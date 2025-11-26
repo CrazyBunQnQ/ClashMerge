@@ -22,7 +22,7 @@
 
 ### 支持解析的规则
 
-目前可以解析 clash 的 yaml 文件，base64 的配置文件（目前只支持解析了 v2ray 和 Trojan ，ss 由于我这边没有测试数据暂不支持）
+目前可以解析 clash 的 yaml 文件，base64 的配置文件（支持 vmess, vless, trojan, ss 等协议）
 
 ---
 
@@ -47,28 +47,43 @@
 
 ### 使用方法
 
-1. 参考 `config/template.yaml` 修改为 `config/你的配置.yaml`。 最关键的节点是 `pull-proxy-source` 这里面配置的就是你的服务 `订阅链接`。其他的配置其实可以不用改，如果要更改就做好详尽的测试，里面的每个节点在目前支持的基础规则我都保证测试可用，如果你用不了，那就自己好好查查。另外一个节点是 `Proxy` 这里面可以配置你自己搭建的，或者没有配置文件的节点。配置文件里面的内容最终都会合并到配置文件里面去。
+1. 依赖环境
+   本项目需要 `Python 3` 环境。
+   ```bash
+   pip install flask pyyaml requests
+   ```
+
+2. 配置文件
+   参考 `config/template.yaml` 修改为 `config/你的配置.yaml`。 最关键的节点是 `pull-proxy-source` 这里面配置的就是你的服务 `订阅链接`。其他的配置其实可以不用改，如果要更改就做好详尽的测试，里面的每个节点在目前支持的基础规则我都保证测试可用，如果你用不了，那就自己好好查查。另外一个节点是 `Proxy` 这里面可以配置你自己搭建的，或者没有配置文件的节点。配置文件里面的内容最终都会合并到配置文件里面去。
    > 注意配置文件要放在运行目录的 `config` 目录下
-2. 运行
-   - 如果是 `clone` 下来的项目就在配置好 `go` 的环境以后，执行 `go run main.go Port` 就可以了。（注意，如果报错了第一反应就是检查网络，别是网络不通。）`Port` 是你服务器要开启的端口。
-   - 如果是下载的可执行文件，就在命令行下运行可执行文件 + `Port` 就ok了。
-3. 然后访问你的 `http://ip:port/parse?name=你的配置&baseName=BaseRuleName`。 `你的配置` 这个就是上面操作你自己更改的配置文件名称，`BaseRuleName` 这个名字就是在配置文件中 `base-config` 节点下的 `name`。
-4. 如果没问题，就可以看到输出配置文件，如果有问题去 `log/errors.txt` 查看日志文件。
+
+3. 运行
+   在项目根目录下运行：
+   ```bash
+   python3 python/main.py [Port]
+   ```
+   `Port` 是你服务器要开启的端口，默认为 6789。
+
+4. 访问
+   然后访问你的 `http://ip:port/parse?name=你的配置&baseName=BaseRuleName`。 `你的配置` 这个就是上面操作你自己更改的配置文件名称（不包含 `.yaml` 后缀），`BaseRuleName` 这个名字就是在配置文件中 `base-config` 节点下的 `name`。
+
+5. 结果
+   如果没问题，就可以看到输出配置文件，如果有问题去 `python/log/errors.txt` 查看日志文件。
 
 例如: 
 
 配置文件使用 `config/template.yaml`
 
-目录结构如下:
+配置目录结构如下:
+
 ![目录结构](dir.png)
 
 ```shell
-cd out
-clash_merge.exe 6789
+python3 python/main.py 6789
 # 服务启动，端口：6789
 ```
 
-访问 `http://localhost:6789/parse?name=my&baseName=CrazyBunQnQ` 即可获取合并后的 Clash 配置文件
+访问 `http://localhost:6789/parse?name=template&baseName=clash-config` 即可获取合并后的 Clash 配置文件
 该地址直接在 Clash 中使用即可，包括订阅的节点以及自定义规则等，详见 [配置文件说明](config/template.yaml)
 
 ---
