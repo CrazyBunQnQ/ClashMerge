@@ -1,0 +1,996 @@
+# 基础规则源
+# 这个就是你要采用规则的源地址，会把代理填入这里面，然后把要覆盖的参数覆盖进去
+base-config:
+  #  - name: name
+  #    url: url
+  #- name: CrazyBunQnQ
+  #  url: "https://raw.githubusercontent.com/CrazyBunQnQ/SS-Rule-Snippet/baozi/LAZY_RULES/advanced.yaml"
+
+# 不想要的节点 name, 支持正则表达式
+filter-proxy-name:
+#  - "名称 name"
+  # - "[马柬鲜色哈英波瑞葡卢俄乌土廷巴南印德泰菲尼]"
+  # - "直连"
+  # - "套餐"
+  # - "流量"
+  # - "官网"
+
+# 不想要的 节点 server, 支持正则表达式
+filter-proxy-server:
+#  - "server"
+
+# 过滤的 proxy-providers
+filter-proxy-providers:
+#  - "server"
+  # - "provider1"
+  # - "test"
+
+# 过滤的 proxy-groups
+filter-proxy-groups:
+#  - "server"
+  # - "UseProvider"
+  # - "relay"
+  # - "auto"
+  # - "fallback-auto"
+  # - "load-balance"
+  # - "Proxy"
+
+# 拉取代理源
+# 这个就是你的订阅地址，会从这个地址提取代理信息添加到上面的基础规则源里面
+
+pull-proxy-source:
+  #  按照下面的输入方式填写
+  #  - name: name
+  #    url: url
+  # - name: 魔戒
+    # url: "https://onlysub.mjurl.com/api/v1/client/subscribe?token=e8fc4e1d7d7e7f68"
+  # - name: 一分机场
+    # url: "https://yfjc.xyz/api/v1/client/subscribe?token=bff7c92249f5165f7946"
+  # - name: 矢矧网络科
+    # url: "https://alpha.sagittarius-link.com/link/BAcGUB?clash=8"
+  #- name: 六神
+  #  url: "https://link.sixgod.win/link/lVfkABiE?flag=clash"
+
+
+# 下面的参数都会覆盖或合并到最终生成的配置文件里面去
+
+# HTTP 代理端口
+port: 7890
+
+# SOCKS5 代理端口
+socks-port: 7891
+
+# Transparent proxy server port for Linux and macOS
+# redir-port: 7892
+
+# HTTP(S) and SOCKS5 server on the same port
+# mixed-port: 7890
+
+# authentication of local SOCKS5/HTTP(S) server
+# authentication:
+#  - "user1:pass1"
+#  - "user2:pass2"
+
+# 允许局域网的连接（可用来共享代理）
+allow-lan: true
+bind-address: '*'
+# 此功能仅在 allow-lan 设置为 true 时生效，支持三种参数：
+# "*"                           绑定所有的 IP 地址
+# 192.168.122.11                绑定一个的 IPv4 地址
+# "[aaaa::a8aa:ff:fe09:57d8]"   绑定一个 IPv6 地址
+
+# 规则模式：Rule（规则） / Global（全局代理）/ Direct（全局直连）
+mode: Rule
+
+# 设置日志输出级别 (默认级别：silent，即不输出任何内容，以避免因日志内容过大而导致程序内存溢出）。
+# 5 个级别：silent / info / warning / error / debug。级别越高日志输出量越大，越倾向于调试，若需要请自行开启。
+log-level: silent
+
+# When set to false, resolver won't translate hostnames to IPv6 addresses ipv6 的支持
+ipv6: false
+
+# clash 的 RESTful API
+external-controller: 127.0.0.1:9090
+
+# 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `${API}/ui`
+# 参数应填写配置目录的相对路径或绝对路径。
+# external-ui: folder
+
+# RESTful API 的口令 (可选)
+secret: "123456"
+
+# 出站网卡接口
+# interface-name: en0
+
+# DNS 服务器和建立连接时的 静态 Hosts, 仅在 dns.enhanced-mode 模式为 redir-host 生效
+# 支持通配符域名 (例如: *.clash.dev, *.foo.*.example.com )
+# 不使用通配符的域名优先级高于使用通配符的域名 (例如: foo.example.com > *.example.com > .example.com )
+# 注意: +.foo.com 的效果等同于 .foo.com 和 foo.com
+hosts:
+  'vmess-us.crazybunqnq.com': '23.106.153.66'
+  'trojan-jp.crazybunqnq.com': '167.179.111.244'
+# '*.clash.dev': 127.0.0.1
+# '.dev': 127.0.0.1
+# 'alpha.clash.dev': '::1'
+
+# DNS 服务器配置(可选；若不配置，程序内置的 DNS 服务会被关闭)
+# dns:
+#   enable: true
+#   listen: 0.0.0.0:53
+#   ipv6: true # 当此选项为 false 时, AAAA 请求将返回空
+dns:
+  enable: true
+  listen: 127.0.0.1:1053
+  ipv6: false
+
+#   # 以下填写的 DNS 服务器将会被用来解析 DNS 服务的域名
+#   # 仅填写 DNS 服务器的 IP 地址
+#   default-nameserver:
+#     - 1.2.4.8
+#     - 223.5.5.5
+#     - 114.114.114.114
+#     - 119.29.29.29
+#     - 8.8.8.8
+#   enhanced-mode: redir-host # 或 fake-ip
+#   fake-ip-range: 198.18.0.1/16 # Fake IP 地址池 (CIDR 形式)
+#   # use-hosts: true # 查询 hosts 并返回 IP 记录
+  default-nameserver:
+    - 223.5.5.5
+    - 223.6.6.6
+    - 8.8.8.8
+    - 8.8.4.4
+    - 1.2.4.8
+    - 114.114.114.114
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  use-hosts: true
+
+#   # 在以下列表的域名将不会被解析为 fake ip，这些域名相关的解析请求将会返回它们真实的 IP 地址
+#   # fake-ip-filter:
+#   #   - '*.lan'
+#   #   - localhost.ptlogin2.qq.com
+
+#   # 支持 UDP / TCP / DoT / DoH 协议的 DNS 服务，可以指明具体的连接端口号。
+#   # 所有 DNS 请求将会直接发送到服务器，不经过任何代理。
+#   # Clash 会使用最先获得的解析记录回复 DNS 请求
+#   nameserver:
+#     - https://13800000000.rubyfish.cn/
+#     - https://dns.alidns.com/dns-query
+#     - https://doh.360.cn/dns-query
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+    - https://ada.openbld.net/dns-query
+
+#   # 当 fallback 参数被配置时, DNS 请求将同时发送至上方 nameserver 列表和下方 fallback 列表中配置的所有 DNS 服务器.
+#   # 当解析得到的 IP 地址的地理位置不是 CN 时，clash 将会选用 fallback 中 DNS 服务器的解析结果。
+#   # fallback:
+#   #  - https://dns.google/dns-query
+  fallback:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.switch.ch/dns-query
+    - https://doh.360.cn/dns-query
+    - tls://8.8.4.4:853
+
+#   # 如果使用 nameserver 列表中的服务器解析的 IP 地址在下方列表中的子网中，则它们被认为是无效的，
+#   # Clash 会选用 fallback 列表中配置 DNS 服务器解析得到的结果。
+#   #
+#   # 当 fallback-filter.geoip 为 true 且 IP 地址的地理位置为 CN 时，
+#   # Clash 会选用 nameserver 列表中配置 DNS 服务器解析得到的结果。
+#   #
+#   # 当 fallback-filter.geoip 为 false, 如果解析结果在 fallback-filter.ipcidr 范围内，
+#   # Clash 会选用 nameserver 列表中配置 DNS 服务器解析得到的结果。
+#   #
+#   # 采取以上逻辑进行域名解析是为了对抗 DNS 投毒攻击。
+#   fallback-filter:
+#     geoip: true
+#     ipcidr:
+#     # - 240.0.0.0/4
+#  fallback-filter:
+#    geoip: true
+#    ipcidr:
+#      - 240.0.0.0/4
+#      - 0.0.0.0/32
+
+proxies:
+#  - name: "ss1"
+#    type: ss
+#    server: server
+#    port: 443
+#    cipher: chacha20-ietf-poly1305
+#    password: "password"
+#    # udp: true
+
+proxy-groups:
+#  # url-test 可以自动选择与指定 URL 测速后，延迟最短的服务器
+#  - name: "auto"
+#    type: url-test
+#    url: 'http://www.gstatic.com/generate_204'
+#    interval: 300
+
+#  # fallback 可以尽量按照用户书写的服务器顺序，在确保服务器可用的情况下，自动选择服务器
+#  - name: "fallback-auto"
+#    type: fallback
+#    url: 'http://www.gstatic.com/generate_204'
+#    interval: 300
+#
+#  # load-balance 可以使相同 eTLD 请求在同一条代理线路上
+#  - name: "load-balance"
+#    type: load-balance
+#    url: 'http://www.gstatic.com/generate_204'
+#    interval: 300
+  - name: "代理"
+    type: select
+    proxies:
+      - 自动代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+  # url-test 可以自动代理与指定 URL 测速后，延迟最短的服务器
+  - name: "自动代理"
+    type: url-test
+    proxies:
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 500
+  - name: "BiliBili"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 香港节点
+  - name: "YouTube"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "TikTok"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+  - name: "Netflix"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "Disney+"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "Emby"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "隐私防护"
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      - 代理
+  - name: "游戏平台"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "Nintendo"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "Steam"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "Epic"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "加密货币"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "下载平台"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+  - name: "BT种子"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+  - name: "国内流量"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+  - name: "广告拦截"
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+  - name: "漏网之鱼"
+    type: select
+    proxies:
+      - 代理
+      - 自动代理
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+  - name: "ChatGPT"
+    type: select
+    proxies:
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+      - 美国节点
+      - 香港节点
+  - name: "香港节点"
+    type: select
+    proxies:
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+  - name: "日本节点"
+    type: select
+    proxies:
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+  - name: "美国节点"
+    type: select
+    proxies:
+      - DIRECT
+      - 美国-自建
+      - 美国-自建-CDN
+      - 日本-自建
+  - name: "台湾节点"
+    type: select
+    proxies:
+      - DIRECT
+      - 美国-自建
+      - 美国-自建-CDN
+      - 日本-自建
+  - name: "新加坡节点"
+    type: select
+    proxies:
+      - DIRECT
+      - 美国-自建
+      - 美国-自建-CDN
+      - 日本-自建
+  - name: "欧洲节点"
+    type: select
+    proxies:
+      - DIRECT
+      - 美国-自建
+      - 美国-自建-CDN
+      - 日本-自建
+      - 美国节点
+  - name: "社交平台IP归属地"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+  - name: "冒险岛N"
+    type: select
+    proxies:
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+  - name: "其他地区"
+    type: select
+    proxies:
+      - DIRECT
+      - 日本-自建
+      - 美国-自建
+      - 美国-自建-CDN
+  #  # fallback 可以尽量按照用户书写的服务器顺序，在确保服务器可用的情况下，自动选择服务器
+  - name: "故障转移"
+    type: fallback
+    proxies:
+      - 自动代理
+      - 日本-自建
+      - 美国-自建
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 500
+  # 代理的转发链, 在 proxies 中不应该包含 relay. 不支持 UDP.
+  # 流量: clash <-> http <-> vmess <-> ss1 <-> ss2 <-> 互联网
+  #- name: "中继"
+  #  type: relay
+  #  proxies:
+  # load-balance 可以使相同 eTLD 请求在同一条代理线路上
+  # - name: "负载均衡"
+    # type: load-balance
+    # proxies:
+    # url: 'http://www.gstatic.com/generate_204'
+    # interval: 500
+
+# 服务器节点订阅
+proxy-providers:
+# name: # Provider 名称
+#   type: http # http 或 file
+#   path: # 文件路径
+#   url: # 只有当类型为 HTTP 时才可用，您不需要在本地空间中创建新文件。
+#   interval: # 自动更新间隔，仅在类型为 HTTP 时可用
+#   health-check: # 健康检查选项从此处开始
+#     enable:
+#     url:
+#     interval:
+
+#
+# 「url」参数填写订阅链接
+#
+# 订阅链接可以使用 API 进行转换，如：https://sub.dler.io/
+#
+# 1.模式选择「进阶模式」 2.填写订阅链接 3.勾选「输出为 Node List」 4.「生成订阅链接」
+#
+
+rule-providers:
+  # name: # Provider 名称
+  #   type: http # http 或 file
+  #   behavior: classical # 或 ipcidr、domain
+  #   path: # 文件路径
+  #   url: # 只有当类型为 HTTP 时才可用，您不需要在本地空间中创建新文件。
+  #   interval: # 自动更新间隔，仅在类型为 HTTP 时可用
+  IPfake:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/lwd-temp/anti-ip-attribution/generated/rule-provider.yaml
+    path: "./rule_provider/IPfake.yaml"
+    interval: 259200
+  BiliBili:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/BiliBili/BiliBili.yaml
+    path: "./rule_provider/bilibili.yaml"
+    interval: 259200
+  Disney:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Disney/Disney.yaml
+    path: "./rule_provider/Disney.yaml"
+    interval: 259200
+  Netflix:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Netflix/Netflix.yaml
+    path: "./rule_provider/Netflix.yaml"
+    interval: 259200
+  TikTok:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/TikTok/TikTok.yaml
+    path: "./rule_provider/TikTok.yaml"
+    interval: 259200
+  YouTube:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTube/YouTube.yaml
+    path: "./rule_provider/YouTube.yaml"
+    interval: 259200
+  Google:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.yaml
+    path: "./rule_provider/Google.yaml"
+    interval: 259200
+  Intercom:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Intercom/Intercom.yaml
+    path: "./rule_provider/Intercom.yaml"
+    interval: 259200
+  Emby:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/justdoiting/emby-rules/Emby.yaml
+    path: "./rule_provider/Emby.yaml"
+    interval: 259200
+  Game:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Game/Game.yaml
+    path: "./rule_provider/Game.yaml"
+    interval: 259200
+  BanEasyPrivacy:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Privacy/Privacy_Classical.yaml
+    path: "./rule_provider/BanEasyPrivacy.yaml"
+    interval: 259200
+  Advertising:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/AdvertisingLite/AdvertisingLite_Classical.yaml
+    path: "./rule_provider/Advertising.yaml"
+    interval: 259200
+  Download:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Download/Download.yaml
+    path: "./rule_provider/Download.yaml"
+    interval: 259200
+  PrivateTracker:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/PrivateTracker/PrivateTracker.yaml
+    path: "./rule_provider/PrivateTracker.yaml"
+    interval: 259200
+  ChinaMax:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP_Classical.yaml
+    path: "./rule_provider/ChinaMax.yaml"
+    interval: 259200
+  Global:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Global/Global_Classical.yaml
+    path: "./rule_provider/Global.yaml"
+    interval: 259200
+  Lan:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Lan/Lan.yaml
+    path: "./rule_provider/Lan.yaml"
+    interval: 259200
+  Patreon:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Patreon/Patreon.yaml
+    path: "./rule_provider/Patreon.yaml"
+    interval: 259200
+  Microsoft:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Microsoft/Microsoft.yaml
+    path: "./rule_provider/Microsoft.yaml"
+    interval: 259200
+  # OpenAI:
+    # type: http
+    # behavior: classical
+    # url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/OpenAI/OpenAI.yaml
+    # path: "./rule_provider/OpenAI.yaml"
+    # interval: 259200
+  Epic:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Epic/Epic.yaml
+    path: "./rule_provider/Epic.yaml"
+    interval: 259200
+  Steam:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Steam/Steam.yaml
+    path: "./rule_provider/Steam.yaml"
+    interval: 259200
+  Binance:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Binance/Binance.yaml
+    path: "./rule_provider/Binance.yaml"
+    interval: 259200
+  Bing:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Bing/Bing.yaml
+    path: "./rule_provider/Bing.yaml"
+    interval: 259200
+  Cloudflare:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Cloudflare/Cloudflare.yaml
+    path: "./rule_provider/Cloudflare.yaml"
+    interval: 259200
+  Cloudflarecn:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Cloudflarecn/Cloudflarecn.yaml
+    path: "./rule_provider/Cloudflarecn.yaml"
+    interval: 259200
+  GameDownload:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Game/GameDownload/GameDownload.yaml
+    path: "./rule_provider/GameDownload.yaml"
+    interval: 259200
+  GameDownloadCN:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Game/GameDownloadCN/GameDownloadCN.yaml
+    path: "./rule_provider/GameDownloadCN.yaml"
+    interval: 259200
+  OKX:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/OKX/OKX.yaml
+    path: "./rule_provider/OKX.yaml"
+    interval: 259200
+  PayPal:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/PayPal/PayPal.yaml
+    path: "./rule_provider/PayPal.yaml"
+    interval: 259200
+  Nintendo:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Nintendo/Nintendo.yaml
+    path: "./rule_provider/Nintendo.yaml"
+    interval: 259200
+  Crypto:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script/rule/Clash/Crypto/Crypto.yaml
+    path: "./rule_provider/Crypto.yaml"
+    interval: 259200
+
+
+rules:
+  # 自定义规则
+  # 优先级上面的最高
+  ## 您可以在此处插入您补充的自定义规则（请注意保持缩进）
+  # - DOMAIN,baidu.com,DIRECT # 域名 直连
+  # - DOMAIN-SUFFIX,baidu.com,REJECT # 域名后缀 拒绝连接
+  # - RULE-SET,BiliBili,BiliBili # 使用规则集
+  # - DOMAIN-KEYWORD,bili,BiliBili # 域名关键词 使用指定组的连接配置
+  # - IP-CIDR,127.0.0.0/8,DIRECT # IP段 直连
+  # 订阅地址
+  - DOMAIN-SUFFIX,yfjc.xyz,故障转移
+  - DOMAIN-SUFFIX,sagittarius-link.com,故障转移
+  - DOMAIN-SUFFIX,mjurl.com,故障转移
+  - DOMAIN-SUFFIX,sixgod.win,故障转移
+  - DOMAIN-SUFFIX,yahagi.vip,故障转移
+  - DOMAIN-SUFFIX,yhglink.com,故障转移
+  - DOMAIN-SUFFIX,sagittarius-link.com,故障转移
+
+  # 内网穿透
+  # - DOMAIN,gitlab.crazybunqnq.com,代理
+
+  # 字节
+  - DOMAIN-SUFFIX,mchost.guru,美国节点
+  - DOMAIN-SUFFIX,trae.ai,美国节点
+  - DOMAIN-SUFFIX,bytedance.com,美国节点
+  - DOMAIN-SUFFIX,bytednsdoc.com,美国节点
+  - DOMAIN-SUFFIX,byteintapi.com,美国节点
+  - DOMAIN-SUFFIX,byteintlapi.com,美国节点
+  - DOMAIN-SUFFIX,byteoversea.com,美国节点
+  - DOMAIN-SUFFIX,byteoversea.net,美国节点
+  - DOMAIN-SUFFIX,bytetos.com,美国节点
+  - DOMAIN-SUFFIX,sgsnssdk.com,美国节点
+  - DOMAIN-SUFFIX,ibytedtos.com,美国节点
+  - DOMAIN-SUFFIX,zijieapi.com,美国节点
+  - DOMAIN-KEYWORD,trae-api,美国节点
+  - IP-CIDR,91.108.56.155/32,美国节点
+
+  # 棕色尘埃2 登录
+  - DOMAIN-KEYWORD,browndust2,美国节点
+  - DOMAIN-SUFFIX,neonapi.com,美国节点
+  - DOMAIN-SUFFIX,souseihaku.com,美国节点
+  - DOMAIN-KEYWORD,bd2-cdn,美国节点
+  # - DOMAIN-SUFFIX,bd2.pmang.cloud,美国节点
+  # 棕色尘埃2 下载
+  # - DOMAIN-KEYWORD,bd2-cdn,DIRECT
+  # - DOMAIN,bd2-cdn.akamaized.net,DIRECT
+  - DOMAIN-SUFFIX,bd2.pmang.cloud,DIRECT
+  
+  # 冒险岛N
+  - DOMAIN,msn-wvslogin.msu.io,冒险岛N
+  - DOMAIN-SUFFIX,msu.io,冒险岛N
+  - DOMAIN-SUFFIX,nexon.com,冒险岛N
+  - DOMAIN-SUFFIX,getgrass.io,冒险岛N
+  - IP-CIDR,115.204.139.118/24,冒险岛N
+  - IP-CIDR,195.178.110.220/24,冒险岛N
+
+  # Twitter
+  - DOMAIN-SUFFIX,twimg.com,美国节点
+
+  # Reddit
+  - DOMAIN-SUFFIX,reddit.com,美国节点
+
+  # Qoo App
+  - DOMAIN-SUFFIX,qoo-app.com,台湾节点
+  - DOMAIN-SUFFIX,qoo-img.com,台湾节点
+
+  # 洛夫特拉夫特行动
+  - DOMAIN-SUFFIX,heliusapi.com,日本节点
+
+  # Telegram
+  - DOMAIN,t.me,代理
+  - DOMAIN,t.co,代理
+  - DOMAIN-SUFFIX,telegram.org,代理
+  - DOMAIN-SUFFIX,telegram.org,代理
+  # - IP-CIDR,149.154.164.0/22,代理
+  # - IP-CIDR,149.154.168.0/22,代理
+  # - IP-CIDR,149.154.172.0/22,代理
+  # - IP-CIDR,205.172.60.0/22,代理
+
+  - DOMAIN-SUFFIX,javdb.com,美国节点
+  - DOMAIN-SUFFIX,datature.io,美国节点
+  - DOMAIN-SUFFIX,playstove.com,故障转移
+  - DOMAIN-SUFFIX,4gamers.com.tw,代理
+  - DOMAIN-SUFFIX,gofile.io,代理
+  - DOMAIN-SUFFIX,perplexity.ai,美国节点
+  - DOMAIN-SUFFIX,maxmind.com,美国节点
+  - DOMAIN-SUFFIX,anblackpass.com,故障转移
+  - DOMAIN-SUFFIX,us-east-1.token.awswaf.com,代理
+  - DOMAIN-SUFFIX,mega.nz,代理
+  - DOMAIN-SUFFIX,mega.co.nz,代理
+  - DOMAIN-SUFFIX,zdoc.app,代理
+  - DOMAIN,developer.download.nvidia.com,下载平台
+  - DOMAIN-SUFFIX,bitestring.com,代理
+  - DOMAIN-SUFFIX,ne.jp,日本节点
+  - DOMAIN-SUFFIX,elevenlabs.io,美国节点
+  - DOMAIN-SUFFIX,perchance.org,美国节点
+  - DOMAIN-SUFFIX,xtool.sh,美国节点
+  - DOMAIN-SUFFIX,netflowmeter.ca,美国节点
+  - DOMAIN-SUFFIX,pages.dev,美国节点
+  - DOMAIN-SUFFIX,dlsite.com,日本节点
+  - DOMAIN-SUFFIX,ntfy.sh,美国节点
+  - DOMAIN-SUFFIX,bfl.ai,美国节点
+  - DOMAIN-SUFFIX,debian.org,美国节点
+  - DOMAIN-SUFFIX,comfyui-wiki.com,美国节点
+  - DOMAIN,api.cloudflare.com,美国节点
+  - DOMAIN-SUFFIX,hidden-street.net,美国节点
+  - DOMAIN-SUFFIX,all-hands.dev,美国节点
+  - DOMAIN-SUFFIX,deepsider.ai,美国节点
+  - DOMAIN-SUFFIX,sider.ai,美国节点
+  - DOMAIN-SUFFIX,claw.cloud,美国节点
+  - DOMAIN-SUFFIX,clawcloudrun.com,美国节点
+  - DOMAIN-SUFFIX,aopst.vip,美国节点
+  - DOMAIN-SUFFIX,tv.garden,美国节点
+  - DOMAIN-SUFFIX,gitbook.io,美国节点
+  - DOMAIN-SUFFIX,rubii.ai,美国节点
+  - DOMAIN-SUFFIX,yourware.app,美国节点
+  - DOMAIN-SUFFIX,yourware.so,美国节点
+  - DOMAIN-SUFFIX,simonwillison.net,美国节点
+  - DOMAIN-KEYWORD,missav,故障转移
+  - DOMAIN-SUFFIX,argent-api.com,美国节点
+  - DOMAIN-SUFFIX,iplaysoft.com,美国节点
+  - DOMAIN-SUFFIX,grok.com,美国节点
+  - DOMAIN-SUFFIX,x.com,美国节点
+  - DOMAIN-SUFFIX,x.ai,美国节点
+  - DOMAIN-SUFFIX,ipify.org,美国节点
+  - DOMAIN-SUFFIX,dify.ai,美国节点
+  - DOMAIN-SUFFIX,manus.im,美国节点
+  - DOMAIN,openvsxorg.blob.core.windows.net,美国节点
+  - DOMAIN-SUFFIX,open-vsx.org,美国节点
+  - DOMAIN-SUFFIX,tavily.com,美国节点
+  - DOMAIN-SUFFIX,civitai.com,美国节点
+  #- DOMAIN-SUFFIX,age-spa.com,代理
+  - DOMAIN-SUFFIX,docker.com,美国节点
+  - DOMAIN-SUFFIX,docker.io,美国节点
+  - DOMAIN-SUFFIX,e-hentai.org,故障转移
+  - DOMAIN-SUFFIX,igdb.com,故障转移
+  - DOMAIN-SUFFIX,steamstatic.com,DIRECT
+  - DOMAIN-SUFFIX,steampowered.com,Steam
+  - DOMAIN,store.steampowered.com,Steam
+  - DOMAIN-SUFFIX,steamserver.net,Steam
+  - DOMAIN-SUFFIX,dash.cloudflare.com,代理
+  - DOMAIN,challenges.cloudflare.com,代理
+  - DOMAIN,repo.jellyfin.org,故障转移
+  - DOMAIN-SUFFIX,ddsrem.com,故障转移
+  - DOMAIN-SUFFIX,sagernet.org,故障转移
+  - DOMAIN-KEYWORD,discord,代理
+  - DOMAIN-SUFFIX,v2ex.com,故障转移
+  - DOMAIN-SUFFIX,pixiv.net,日本节点
+  - DOMAIN-SUFFIX,coinkarma.co,故障转移
+  - DOMAIN-SUFFIX,plausible.corsme.com,故障转移
+  - DOMAIN-SUFFIX,tenor.com,故障转移
+  - DOMAIN-SUFFIX,ytpics.com,故障转移
+  - DOMAIN-SUFFIX,martin-thoma.com,故障转移
+  - DOMAIN-SUFFIX,rsshub.com,故障转移
+  - DOMAIN-SUFFIX,forms.gle,故障转移
+  - DOMAIN-SUFFIX,cursor.com,故障转移
+  - DOMAIN-SUFFIX,visualized.fun,故障转移
+  - DOMAIN-SUFFIX,rsshub.app,DIRECT
+  - DOMAIN-SUFFIX,clicli.pro,代理
+  - DOMAIN-SUFFIX,follow.is,代理
+  - DOMAIN-SUFFIX,mdhweekly.com,代理
+  - DOMAIN-SUFFIX,ssscdn.io,代理
+  - IP-CIDR,89.168.65.165/32,下载平台
+  - IP-CIDR,195.154.184.151/32,下载平台
+  - DOMAIN,iosapps.itunes.apple.com,下载平台
+  - DOMAIN-SUFFIX,store.epicgames.com,Epic
+  #  - DOMAIN-SUFFIX,163.com,DIRECT
+  # - DOMAIN,account.jetbrains.com,REJECT
+  - DOMAIN,jcenter.bintray.com,DIRECT
+  - DOMAIN,cdn-lfs-us-1.huggingface.co,DIRECT
+  - DOMAIN-SUFFIX,t-msedge.net,DIRECT
+  - DOMAIN-SUFFIX,immich.app,代理
+  - DOMAIN,tiles.immich.cloud,代理
+  - DOMAIN,static.immich.cloud,代理
+  - DOMAIN-SUFFIX,gamer520.com,代理
+  - DOMAIN-SUFFIX,xxxxx528.com,代理
+  - DOMAIN-SUFFIX,nineyu.com,代理
+  - DOMAIN-SUFFIX,surrit.com,代理
+  - DOMAIN-SUFFIX,zhile.io,代理
+  - DOMAIN-SUFFIX,tusiart.com,代理
+  - DOMAIN-SUFFIX,ubits.club,下载平台
+  - DOMAIN-SUFFIX,gradle.org,DIRECT
+  - DOMAIN-SUFFIX,speedtest.net,DIRECT
+  - DOMAIN-SUFFIX,fakeopen.com,美国节点
+  - DOMAIN-SUFFIX,gjfzpt.cn,REJECT
+  - DOMAIN-SUFFIX,eastwestbank.com,美国节点
+  # 王者荣耀国际服
+  - DOMAIN-SUFFIX,hok.qq.com,日本节点
+  - DOMAIN-SUFFIX,midasbuy.com,日本节点
+  - DOMAIN-SUFFIX,playerinfinite.com,日本节点
+  - DOMAIN-SUFFIX,rumt-sg.com,日本节点
+  - DOMAIN-SUFFIX,rqd.qq.com,日本节点
+  - DOMAIN-SUFFIX,gdt.qq.com,日本节点
+  - DOMAIN,rdelivery.qq.com,日本节点
+  - DOMAIN,snowflake.qq.com,日本节点
+  - DOMAIN,dlied5.qq.com,日本节点
+  # - DOMAIN-SUFFIX,harvestsharp.com,日本节点
+  # PayGo
+  - DOMAIN-SUFFIX,t-mobile.com,美国节点
+  - DOMAIN-SUFFIX,ultramobile.com,美国节点
+  - DOMAIN-SUFFIX,3gppnetwork.org,美国节点
+  - IP-CIDR,208.54.0.0/16,美国节点
+  - IP-CIDR,66.94.0.0/19,美国节点
+  - IP-CIDR,206.29.177.36/32,美国节点
+  # OPENAI
+  - DOMAIN-SUFFIX,amplitude,ChatGPT
+  - DOMAIN-SUFFIX,withpersona.com,ChatGPT
+  - DOMAIN-SUFFIX,prodregistryv2.org,ChatGPT
+  - DOMAIN,browser-intake-datadoghq.com,ChatGPT
+  - DOMAIN,chat.openai.com.cdn.cloudflare.net,ChatGPT
+  - DOMAIN,gemini.google.com,ChatGPT
+  - DOMAIN-SUFFIX,deno.dev,ChatGPT
+  - DOMAIN,openai-api.arkoselabs.com,ChatGPT
+  - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,ChatGPT
+  - DOMAIN,openaicomproductionae4b.blob.core.windows.net,ChatGPT
+  - DOMAIN,production-openaicom-storage.azureedge.net,ChatGPT
+  - DOMAIN,static.cloudflareinsights.com,ChatGPT
+  - DOMAIN-SUFFIX,ai.com,ChatGPT
+  - DOMAIN-SUFFIX,algolia.net,ChatGPT
+  - DOMAIN-SUFFIX,api.statsig.com,ChatGPT
+  - DOMAIN-SUFFIX,auth0.com,ChatGPT
+  - DOMAIN-SUFFIX,chatgpt.com,ChatGPT
+  - DOMAIN-SUFFIX,chatgpt.livekit.cloud,ChatGPT
+  - DOMAIN-SUFFIX,client-api.arkoselabs.com,ChatGPT
+  - DOMAIN-SUFFIX,events.statsigapi.net,ChatGPT
+  - DOMAIN-SUFFIX,featuregates.org,ChatGPT
+  - DOMAIN-SUFFIX,host.livekit.cloud,ChatGPT
+  - DOMAIN-SUFFIX,identrust.com,ChatGPT
+  - DOMAIN-SUFFIX,intercom.io,ChatGPT
+  - DOMAIN-SUFFIX,intercomcdn.com,ChatGPT
+  - DOMAIN-SUFFIX,launchdarkly.com,ChatGPT
+  - DOMAIN-SUFFIX,oaistatic.com,ChatGPT
+  - DOMAIN-SUFFIX,oaiusercontent.com,ChatGPT
+  - DOMAIN-SUFFIX,observeit.net,ChatGPT
+  - DOMAIN-SUFFIX,openai.com,ChatGPT
+  - DOMAIN-SUFFIX,openaiapi-site.azureedge.net,ChatGPT
+  - DOMAIN-SUFFIX,openaicom.imgix.net,ChatGPT
+  - DOMAIN-SUFFIX,segment.io,ChatGPT
+  - DOMAIN-SUFFIX,sentry.io,ChatGPT
+  - DOMAIN-SUFFIX,stripe.com,ChatGPT
+  - DOMAIN-SUFFIX,sora.com,ChatGPT
+  - DOMAIN-SUFFIX,turn.livekit.cloud,ChatGPT
+  - DOMAIN-KEYWORD,openai,ChatGPT
+  - IP-CIDR,24.199.123.28/32,ChatGPT
+  - IP-CIDR,64.23.132.171/32,ChatGPT
+
+
+  - DOMAIN-SUFFIX,ip.sb,美国节点
+  - DOMAIN-SUFFIX,azurefd.net,美国节点
+
+  # - 规则集，优先级从上到下
+  - RULE-SET,BiliBili,BiliBili
+  - RULE-SET,Patreon,代理
+  - RULE-SET,YouTube,YouTube
+  - RULE-SET,Google,美国节点
+  - RULE-SET,Netflix,Netflix
+  - RULE-SET,Disney,Disney+
+  - RULE-SET,TikTok,TikTok
+  - RULE-SET,Emby,Emby
+  - RULE-SET,BanEasyPrivacy,隐私防护
+  - RULE-SET,Cloudflare,DIRECT
+  - RULE-SET,Cloudflarecn,DIRECT
+  - RULE-SET,Download,下载平台
+  - RULE-SET,PrivateTracker,BT种子
+  - RULE-SET,IPfake,社交平台IP归属地
+  - RULE-SET,PayPal,美国节点
+  - RULE-SET,Bing,美国节点
+  - DOMAIN-SUFFIX,bingparachute.com,美国节点
+  - RULE-SET,Microsoft,美国节点
+  - RULE-SET,Nintendo,Nintendo
+  - RULE-SET,Epic,Epic
+  - RULE-SET,Steam,Steam
+  - RULE-SET,GameDownloadCN,下载平台
+  - RULE-SET,GameDownload,下载平台
+  - RULE-SET,Game,游戏平台
+  - RULE-SET,Binance,加密货币
+  - RULE-SET,OKX,加密货币
+  - RULE-SET,Crypto,加密货币
+  - RULE-SET,Lan,国内流量
+  - RULE-SET,ChinaMax,国内流量
+  - DOMAIN-SUFFIX,cloudfront.net,DIRECT
+  - RULE-SET,Intercom,代理
+
+  - RULE-SET,Advertising,广告拦截
+  - RULE-SET,Global,代理
+  - GEOIP,CN,DIRECT
+  # - 其它
+  - MATCH,漏网之鱼

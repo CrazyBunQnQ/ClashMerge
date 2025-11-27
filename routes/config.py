@@ -67,7 +67,7 @@ def config_ui():
     <div class='header'>在线编辑配置 <button id='theme' class='ghost'>切换主题</button></div>
     <div class='content'>
       <div class='row'>
-        <input id='name' type='text' placeholder='配置名称, 可加载参考配置 template' value='{name}'>
+        <input id='name' type='text' placeholder='配置名称, 可加载参考配置 template、自用规则 my' value='{name}'>
         <button id='load' class='secondary'>加载</button>
         <button id='save'>保存</button>
       </div>
@@ -91,15 +91,13 @@ def config_ui():
         </div>
         <div class='ref-title'>次要配置(可保持默认或从你原来的订阅源里拷贝过来)</div>
         <div class='accordion'>
-          <div class='item'><button class='item-header important' data-target='s-filter-proxy-server'>节点服务器过滤（filter-proxy-server）</button><div id='s-filter-proxy-server' class='item-body'><pre><code>按节点 server 值过滤（域名或 IP 片段）
-用于排除不可信或不需要的节点来源</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-proxy-providers'>节点订阅提供者（proxy-providers）</button><div id='s-proxy-providers' class='item-body'><pre><code>服务器节点订阅提供者定义
+          <div class='item'><button class='item-header' data-target='s-filter-proxy-server'>节点服务器过滤（filter-proxy-server）</button><div id='s-filter-proxy-server' class='item-body'><pre><code>按节点 server 值过滤（域名或 IP 片段）
+用于排除不需要的节点来源</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-proxy-providers'>节点订阅提供者（proxy-providers）</button><div id='s-proxy-providers' class='item-body'><pre><code>服务器节点订阅提供者定义
 type=http/file、path/url、interval、health-check
-用于自动拉取并更新节点列表</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-filter-proxy-providers'>订阅提供者过滤（filter-proxy-providers）</button><div id='s-filter-proxy-providers' class='item-body'><pre><code>按订阅提供者名称过滤
+用于自动拉取并更新外部规则列表</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-filter-proxy-providers'>订阅提供者过滤（filter-proxy-providers）</button><div id='s-filter-proxy-providers' class='item-body'><pre><code>过滤掉订阅源中的订阅提供者
 用于忽略指定的 provider（例如测试源或无效源）</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-filter-proxy-groups'>分组过滤（filter-proxy-groups）</button><div id='s-filter-proxy-groups' class='item-body'><pre><code>按代理组名称过滤
-剔除不需要的分组，避免生成后出现冗余组</code></pre></div></div>
           <div class='item'><button class='item-header' data-target='s-base-config'>base-config</button><div id='s-base-config' class='item-body'><pre><code>基础规则源列表(可以不配置)
 每项包含 name、url
 作为生成最终 Clash 配置的基础规则，后续拉取的代理与覆盖参数会合并到此</code></pre></div></div>
