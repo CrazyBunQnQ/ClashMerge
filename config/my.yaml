@@ -3,17 +3,16 @@
 base-config:
   #  - name: name
   #    url: url
-  #- name: CrazyBunQnQ
-  #  url: "https://raw.githubusercontent.com/CrazyBunQnQ/SS-Rule-Snippet/baozi/LAZY_RULES/advanced.yaml"
+  # - name: CrazyBunQnQ
+    # url: "https://raw.githubusercontent.com/CrazyBunQnQ/SS-Rule-Snippet/baozi/LAZY_RULES/advanced.yaml"
 
 # 不想要的节点 name, 支持正则表达式
 filter-proxy-name:
 #  - "名称 name"
-  # - "[马柬鲜色哈英波瑞葡卢俄乌土廷巴南印德泰菲尼]"
-  # - "直连"
-  # - "套餐"
-  # - "流量"
-  # - "官网"
+  - "[马柬鲜色哈英波瑞葡卢俄乌土廷巴南印德泰菲尼]"
+  - "直连"
+  - "套餐"
+  - "流量"
 
 # 不想要的 节点 server, 支持正则表达式
 filter-proxy-server:
@@ -22,34 +21,26 @@ filter-proxy-server:
 # 过滤的 proxy-providers
 filter-proxy-providers:
 #  - "server"
-  # - "provider1"
-  # - "test"
+  - "provider1"
+  - "test"
 
 # 过滤的 proxy-groups
 filter-proxy-groups:
 #  - "server"
-  # - "UseProvider"
-  # - "relay"
-  # - "auto"
-  # - "fallback-auto"
-  # - "load-balance"
-  # - "Proxy"
+  - "UseProvider"
+  - "relay"
+  - "auto"
+  - "fallback-auto"
+  - "load-balance"
+  - "Proxy"
 
 # 拉取代理源
 # 这个就是你的订阅地址，会从这个地址提取代理信息添加到上面的基础规则源里面
 
 pull-proxy-source:
   #  按照下面的输入方式填写
-  #  - name: name
-  #    url: url
-  # - name: 魔戒
-    # url: "https://onlysub.mjurl.com/api/v1/client/subscribe?token=e8fc4e1d7d7e7f68"
-  # - name: 一分机场
-    # url: "https://yfjc.xyz/api/v1/client/subscribe?token=bff7c92249f5165f7946"
-  # - name: 矢矧网络科
-    # url: "https://alpha.sagittarius-link.com/link/BAcGUB?clash=8"
-  #- name: 六神
-  #  url: "https://link.sixgod.win/link/lVfkABiE?flag=clash"
+  - name: 一分机场
+    url: "https://yfjc.xyz/api/v1/client/subscribe?token=bff7c92249f5165f794"
 
 
 # 下面的参数都会覆盖或合并到最终生成的配置文件里面去
@@ -87,7 +78,7 @@ mode: Rule
 log-level: silent
 
 # When set to false, resolver won't translate hostnames to IPv6 addresses ipv6 的支持
-ipv6: false
+ipv6: true
 
 # clash 的 RESTful API
 external-controller: 127.0.0.1:9090
@@ -121,7 +112,7 @@ hosts:
 dns:
   enable: true
   listen: 127.0.0.1:1053
-  ipv6: false
+  ipv6: true
 
 #   # 以下填写的 DNS 服务器将会被用来解析 DNS 服务的域名
 #   # 仅填写 DNS 服务器的 IP 地址
@@ -193,13 +184,6 @@ dns:
 #      - 0.0.0.0/32
 
 proxies:
-#  - name: "ss1"
-#    type: ss
-#    server: server
-#    port: 443
-#    cipher: chacha20-ietf-poly1305
-#    password: "password"
-#    # udp: true
 
 proxy-groups:
 #  # url-test 可以自动选择与指定 URL 测速后，延迟最短的服务器
@@ -222,19 +206,16 @@ proxy-groups:
   - name: "代理"
     type: select
     proxies:
-      - 自动代理
       - 日本-自建
       - 美国-自建
-      - 美国-自建-CDN
   # url-test 可以自动代理与指定 URL 测速后，延迟最短的服务器
-  - name: "自动代理"
-    type: url-test
+  - name: "电报消息"
+    type: select
     proxies:
+      - 代理
+      - DIRECT
       - 日本-自建
       - 美国-自建
-      - 美国-自建-CDN
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 500
   - name: "BiliBili"
     type: select
     proxies:
@@ -242,63 +223,6 @@ proxy-groups:
       - 代理
       - 日本-自建
       - 美国-自建
-      - 美国-自建-CDN
-      - 香港节点
-  - name: "YouTube"
-    type: select
-    proxies:
-      - 代理
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "TikTok"
-    type: select
-    proxies:
-      - 代理
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-  - name: "Netflix"
-    type: select
-    proxies:
-      - 代理
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "Disney+"
-    type: select
-    proxies:
-      - 代理
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "Emby"
-    type: select
-    proxies:
-      - 代理
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "隐私防护"
-    type: select
-    proxies:
-      - REJECT
-      - DIRECT
-      - 代理
   - name: "游戏平台"
     type: select
     proxies:
@@ -306,169 +230,27 @@ proxy-groups:
       - 代理
       - 日本-自建
       - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "Nintendo"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "Steam"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "Epic"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "加密货币"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "下载平台"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-  - name: "BT种子"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-  - name: "国内流量"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-  - name: "广告拦截"
-    type: select
-    proxies:
-      - REJECT
-      - DIRECT
-  - name: "漏网之鱼"
-    type: select
-    proxies:
-      - 代理
-      - 自动代理
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
   - name: "ChatGPT"
     type: select
     proxies:
       - DIRECT
-      - 日本-自建
       - 美国-自建
-      - 美国-自建-CDN
-      - 美国节点
-      - 香港节点
-  - name: "香港节点"
-    type: select
-    proxies:
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
   - name: "日本节点"
     type: select
     proxies:
       - DIRECT
       - 日本-自建
       - 美国-自建
-      - 美国-自建-CDN
   - name: "美国节点"
     type: select
     proxies:
       - DIRECT
       - 美国-自建
-      - 美国-自建-CDN
       - 日本-自建
-  - name: "台湾节点"
-    type: select
-    proxies:
-      - DIRECT
-      - 美国-自建
-      - 美国-自建-CDN
-      - 日本-自建
-  - name: "新加坡节点"
-    type: select
-    proxies:
-      - DIRECT
-      - 美国-自建
-      - 美国-自建-CDN
-      - 日本-自建
-  - name: "欧洲节点"
-    type: select
-    proxies:
-      - DIRECT
-      - 美国-自建
-      - 美国-自建-CDN
-      - 日本-自建
-      - 美国节点
-  - name: "社交平台IP归属地"
-    type: select
-    proxies:
-      - DIRECT
-      - 代理
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-  - name: "冒险岛N"
-    type: select
-    proxies:
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
-  - name: "其他地区"
-    type: select
-    proxies:
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
-      - 美国-自建-CDN
   #  # fallback 可以尽量按照用户书写的服务器顺序，在确保服务器可用的情况下，自动选择服务器
   - name: "故障转移"
     type: fallback
     proxies:
-      - 自动代理
       - 日本-自建
       - 美国-自建
     url: 'http://www.gstatic.com/generate_204'
@@ -479,11 +261,6 @@ proxy-groups:
   #  type: relay
   #  proxies:
   # load-balance 可以使相同 eTLD 请求在同一条代理线路上
-  # - name: "负载均衡"
-    # type: load-balance
-    # proxies:
-    # url: 'http://www.gstatic.com/generate_204'
-    # interval: 500
 
 # 服务器节点订阅
 proxy-providers:
@@ -724,11 +501,7 @@ rules:
   - DOMAIN-SUFFIX,yhglink.com,故障转移
   - DOMAIN-SUFFIX,sagittarius-link.com,故障转移
 
-  # 内网穿透
-  # - DOMAIN,gitlab.crazybunqnq.com,代理
-
   # 字节
-  - DOMAIN-SUFFIX,mchost.guru,美国节点
   - DOMAIN-SUFFIX,trae.ai,美国节点
   - DOMAIN-SUFFIX,bytedance.com,美国节点
   - DOMAIN-SUFFIX,bytednsdoc.com,美国节点
@@ -748,19 +521,18 @@ rules:
   - DOMAIN-SUFFIX,neonapi.com,美国节点
   - DOMAIN-SUFFIX,souseihaku.com,美国节点
   - DOMAIN-KEYWORD,bd2-cdn,美国节点
-  # - DOMAIN-SUFFIX,bd2.pmang.cloud,美国节点
+  - DOMAIN-SUFFIX,bd2.pmang.cloud,美国节点
   # 棕色尘埃2 下载
   # - DOMAIN-KEYWORD,bd2-cdn,DIRECT
-  # - DOMAIN,bd2-cdn.akamaized.net,DIRECT
-  - DOMAIN-SUFFIX,bd2.pmang.cloud,DIRECT
+  # - DOMAIN-SUFFIX,bd2.pmang.cloud,DIRECT
   
   # 冒险岛N
-  - DOMAIN,msn-wvslogin.msu.io,冒险岛N
-  - DOMAIN-SUFFIX,msu.io,冒险岛N
-  - DOMAIN-SUFFIX,nexon.com,冒险岛N
-  - DOMAIN-SUFFIX,getgrass.io,冒险岛N
-  - IP-CIDR,115.204.139.118/24,冒险岛N
-  - IP-CIDR,195.178.110.220/24,冒险岛N
+  - DOMAIN,msn-wvslogin.msu.io,美国节点
+  - DOMAIN-SUFFIX,msu.io,美国节点
+  - DOMAIN-SUFFIX,nexon.com,美国节点
+  - DOMAIN-SUFFIX,getgrass.io,美国节点
+  - IP-CIDR,115.204.139.118/24,美国节点
+  - IP-CIDR,195.178.110.220/24,美国节点
 
   # Twitter
   - DOMAIN-SUFFIX,twimg.com,美国节点
@@ -769,8 +541,8 @@ rules:
   - DOMAIN-SUFFIX,reddit.com,美国节点
 
   # Qoo App
-  - DOMAIN-SUFFIX,qoo-app.com,台湾节点
-  - DOMAIN-SUFFIX,qoo-img.com,台湾节点
+  - DOMAIN-SUFFIX,qoo-app.com,美国节点
+  - DOMAIN-SUFFIX,qoo-img.com,美国节点
 
   # 洛夫特拉夫特行动
   - DOMAIN-SUFFIX,heliusapi.com,日本节点
@@ -785,29 +557,23 @@ rules:
   # - IP-CIDR,149.154.172.0/22,代理
   # - IP-CIDR,205.172.60.0/22,代理
 
-  - DOMAIN-SUFFIX,javdb.com,美国节点
-  - DOMAIN-SUFFIX,datature.io,美国节点
-  - DOMAIN-SUFFIX,playstove.com,故障转移
   - DOMAIN-SUFFIX,4gamers.com.tw,代理
   - DOMAIN-SUFFIX,gofile.io,代理
   - DOMAIN-SUFFIX,perplexity.ai,美国节点
   - DOMAIN-SUFFIX,maxmind.com,美国节点
   - DOMAIN-SUFFIX,anblackpass.com,故障转移
   - DOMAIN-SUFFIX,us-east-1.token.awswaf.com,代理
+
+  - DOMAIN-SUFFIX,playstove.com,代理
+  - DOMAIN-SUFFIX,anblackpass.com,故障转移
   - DOMAIN-SUFFIX,mega.nz,代理
   - DOMAIN-SUFFIX,mega.co.nz,代理
-  - DOMAIN-SUFFIX,zdoc.app,代理
-  - DOMAIN,developer.download.nvidia.com,下载平台
+  - DOMAIN-SUFFIX,bitestring.com,代理
+  - DOMAIN,developer.download.nvidia.com,DIRECT
   - DOMAIN-SUFFIX,bitestring.com,代理
   - DOMAIN-SUFFIX,ne.jp,日本节点
   - DOMAIN-SUFFIX,elevenlabs.io,美国节点
   - DOMAIN-SUFFIX,perchance.org,美国节点
-  - DOMAIN-SUFFIX,xtool.sh,美国节点
-  - DOMAIN-SUFFIX,netflowmeter.ca,美国节点
-  - DOMAIN-SUFFIX,pages.dev,美国节点
-  - DOMAIN-SUFFIX,dlsite.com,日本节点
-  - DOMAIN-SUFFIX,ntfy.sh,美国节点
-  - DOMAIN-SUFFIX,bfl.ai,美国节点
   - DOMAIN-SUFFIX,debian.org,美国节点
   - DOMAIN-SUFFIX,comfyui-wiki.com,美国节点
   - DOMAIN,api.cloudflare.com,美国节点
@@ -843,9 +609,9 @@ rules:
   - DOMAIN-SUFFIX,e-hentai.org,故障转移
   - DOMAIN-SUFFIX,igdb.com,故障转移
   - DOMAIN-SUFFIX,steamstatic.com,DIRECT
-  - DOMAIN-SUFFIX,steampowered.com,Steam
-  - DOMAIN,store.steampowered.com,Steam
-  - DOMAIN-SUFFIX,steamserver.net,Steam
+  - DOMAIN-SUFFIX,steampowered.com,美国节点
+  - DOMAIN,store.steampowered.com,美国节点
+  - DOMAIN-SUFFIX,steamserver.net,美国节点
   - DOMAIN-SUFFIX,dash.cloudflare.com,代理
   - DOMAIN,challenges.cloudflare.com,代理
   - DOMAIN,repo.jellyfin.org,故障转移
@@ -864,18 +630,20 @@ rules:
   - DOMAIN-SUFFIX,cursor.com,故障转移
   - DOMAIN-SUFFIX,visualized.fun,故障转移
   - DOMAIN-SUFFIX,rsshub.app,DIRECT
+  - DOMAIN-SUFFIX,javdb.com,美国节点
   - DOMAIN-SUFFIX,clicli.pro,代理
   - DOMAIN-SUFFIX,follow.is,代理
   - DOMAIN-SUFFIX,mdhweekly.com,代理
   - DOMAIN-SUFFIX,ssscdn.io,代理
-  - IP-CIDR,89.168.65.165/32,下载平台
-  - IP-CIDR,195.154.184.151/32,下载平台
-  - DOMAIN,iosapps.itunes.apple.com,下载平台
-  - DOMAIN-SUFFIX,store.epicgames.com,Epic
+  - IP-CIDR,89.168.65.165/32,DIRECT
+  - IP-CIDR,195.154.184.151/32,DIRECT
+  - DOMAIN,iosapps.itunes.apple.com,DIRECT
+  - DOMAIN-SUFFIX,store.epicgames.com,美国节点
   #  - DOMAIN-SUFFIX,163.com,DIRECT
-  # - DOMAIN,account.jetbrains.com,REJECT
+  - DOMAIN,account.jetbrains.com,REJECT
   - DOMAIN,jcenter.bintray.com,DIRECT
   - DOMAIN,cdn-lfs-us-1.huggingface.co,DIRECT
+  - DOMAIN-SUFFIX,crazynft.top,DIRECT
   - DOMAIN-SUFFIX,t-msedge.net,DIRECT
   - DOMAIN-SUFFIX,immich.app,代理
   - DOMAIN,tiles.immich.cloud,代理
@@ -886,7 +654,7 @@ rules:
   - DOMAIN-SUFFIX,surrit.com,代理
   - DOMAIN-SUFFIX,zhile.io,代理
   - DOMAIN-SUFFIX,tusiart.com,代理
-  - DOMAIN-SUFFIX,ubits.club,下载平台
+  - DOMAIN-SUFFIX,ubits.club,DIRECT
   - DOMAIN-SUFFIX,gradle.org,DIRECT
   - DOMAIN-SUFFIX,speedtest.net,DIRECT
   - DOMAIN-SUFFIX,fakeopen.com,美国节点
@@ -917,7 +685,6 @@ rules:
   - DOMAIN,browser-intake-datadoghq.com,ChatGPT
   - DOMAIN,chat.openai.com.cdn.cloudflare.net,ChatGPT
   - DOMAIN,gemini.google.com,ChatGPT
-  - DOMAIN-SUFFIX,deno.dev,ChatGPT
   - DOMAIN,openai-api.arkoselabs.com,ChatGPT
   - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,ChatGPT
   - DOMAIN,openaicomproductionae4b.blob.core.windows.net,ChatGPT
@@ -953,44 +720,43 @@ rules:
   - IP-CIDR,64.23.132.171/32,ChatGPT
 
 
-  - DOMAIN-SUFFIX,ip.sb,美国节点
   - DOMAIN-SUFFIX,azurefd.net,美国节点
 
   # - 规则集，优先级从上到下
-  - RULE-SET,BiliBili,BiliBili
+  - RULE-SET,BiliBili,DIRECT
   - RULE-SET,Patreon,代理
-  - RULE-SET,YouTube,YouTube
+  - RULE-SET,YouTube,美国节点
   - RULE-SET,Google,美国节点
-  - RULE-SET,Netflix,Netflix
-  - RULE-SET,Disney,Disney+
-  - RULE-SET,TikTok,TikTok
-  - RULE-SET,Emby,Emby
-  - RULE-SET,BanEasyPrivacy,隐私防护
+  - RULE-SET,Netflix,美国节点
+  - RULE-SET,Disney,美国节点
+  - RULE-SET,TikTok,美国节点
+  - RULE-SET,Emby,美国节点
+  - RULE-SET,BanEasyPrivacy,DIRECT
   - RULE-SET,Cloudflare,DIRECT
   - RULE-SET,Cloudflarecn,DIRECT
-  - RULE-SET,Download,下载平台
-  - RULE-SET,PrivateTracker,BT种子
-  - RULE-SET,IPfake,社交平台IP归属地
+  - RULE-SET,Download,DIRECT
+  - RULE-SET,PrivateTracker,DIRECT
+  - RULE-SET,IPfake,DIRECT
   - RULE-SET,PayPal,美国节点
   - RULE-SET,Bing,美国节点
   - DOMAIN-SUFFIX,bingparachute.com,美国节点
   - RULE-SET,Microsoft,美国节点
-  - RULE-SET,Nintendo,Nintendo
-  - RULE-SET,Epic,Epic
-  - RULE-SET,Steam,Steam
-  - RULE-SET,GameDownloadCN,下载平台
-  - RULE-SET,GameDownload,下载平台
+  - RULE-SET,Nintendo,日本节点
+  - RULE-SET,Epic,美国节点
+  - RULE-SET,Steam,美国节点
+  - RULE-SET,GameDownloadCN,DIRECT
+  - RULE-SET,GameDownload,DIRECT
   - RULE-SET,Game,游戏平台
-  - RULE-SET,Binance,加密货币
-  - RULE-SET,OKX,加密货币
-  - RULE-SET,Crypto,加密货币
-  - RULE-SET,Lan,国内流量
-  - RULE-SET,ChinaMax,国内流量
+  - RULE-SET,Binance,日本节点
+  - RULE-SET,OKX,日本节点
+  - RULE-SET,Crypto,日本节点
+  - RULE-SET,Lan,DIRECT
+  - RULE-SET,ChinaMax,DIRECT
   - DOMAIN-SUFFIX,cloudfront.net,DIRECT
   - RULE-SET,Intercom,代理
 
-  - RULE-SET,Advertising,广告拦截
+  - RULE-SET,Advertising,DIRECT
   - RULE-SET,Global,代理
   - GEOIP,CN,DIRECT
   # - 其它
-  - MATCH,漏网之鱼
+  - MATCH,DIRECT
