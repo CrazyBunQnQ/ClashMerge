@@ -1,9 +1,5 @@
 from flask import Blueprint, request, Response
-import os
-import logging
 from services import config_service
-
-logger = logging.getLogger(__name__)
 
 config_bp = Blueprint("config", __name__)
 
@@ -36,47 +32,6 @@ def config_ui():
         loaded, err = config_service.load_config_text(name)
         if err is None and loaded is not None:
             text = loaded
-    tpl_path = os.path.abspath(os.path.join(os.getcwd(), "config", "template.yaml"))
-    if not os.path.exists(tpl_path):
-        tpl_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config", "template.yaml"))
-    tpl_text = ""
-    try:
-        with open(tpl_path, "r", encoding="utf-8") as f:
-            tpl_text = f.read()
-    except Exception:
-        tpl_text = ""
-
-    def _split_sections(raw):
-        sections = []
-        if not raw:
-            return sections
-        lines = raw.splitlines()
-        current_key = None
-        current_buf = []
-        def flush():
-            if current_key is not None:
-                sections.append((current_key, "\n".join(current_buf)))
-        for ln in lines:
-            if ln and not ln.startswith(" ") and not ln.startswith("\t") and not ln.startswith("#") and ":" in ln:
-                idx = ln.find(":")
-                key = ln[:idx].strip()
-                if key and key.replace("-", "").replace("_", "").isalnum():
-                    flush()
-                    current_key = key
-                    current_buf = [ln]
-                    continue
-            if current_key is None:
-                # skip leading comments until first key
-                continue
-            current_buf.append(ln)
-        flush()
-        return sections
-
-    tpl_sections = _split_sections(tpl_text)
-    section_items = []
-    for i, (k, v) in enumerate(tpl_sections):
-        section_items.append(f"<div class='item'><button class='item-header' data-target='s{i}'>{k}</button><div id='s{i}' class='item-body'><pre><code>{v}</code></pre></div></div>")
-    section_html = "".join(section_items)
     html = f"""
 <!DOCTYPE html>
 <html>
@@ -118,8 +73,60 @@ def config_ui():
       <textarea id='content' placeholder='在此粘贴或编辑 YAML 配置'>{text}</textarea>
       <div id='status' class='status'></div>
       <div class='ref'>
-        <div class='ref-title'>参考配置示例（template）</div>
-        <div class='accordion'>{section_html}</div>
+        <div class='ref-title'>配置项说明</div>
+        <div class='accordion'>
+          <div class='item'><button class='item-header' data-target='s-base-config'>base-config</button><div id='s-base-config' class='item-body'><pre><code>基础规则源列表
+每项包含 name、url
+作为生成最终 Clash 配置的基础规则，后续拉取的代理与覆盖参数会合并到此</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-filter-proxy-name'>filter-proxy-name</button><div id='s-filter-proxy-name' class='item-body'><pre><code>按节点名称过滤，支持正则表达式
+匹配到的节点会被剔除，不参与生成与分组</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-filter-proxy-server'>filter-proxy-server</button><div id='s-filter-proxy-server' class='item-body'><pre><code>按节点 server 值过滤（域名或 IP 片段）
+用于排除不可信或不需要的节点来源</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-filter-proxy-providers'>filter-proxy-providers</button><div id='s-filter-proxy-providers' class='item-body'><pre><code>按订阅提供者名称过滤
+用于忽略指定的 provider（例如测试源或无效源）</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-filter-proxy-groups'>filter-proxy-groups</button><div id='s-filter-proxy-groups' class='item-body'><pre><code>按代理组名称过滤
+剔除不需要的分组，避免生成后出现冗余组</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-pull-proxy-source'>pull-proxy-source</button><div id='s-pull-proxy-source' class='item-body'><pre><code>订阅源列表（name、url）
+从这些订阅拉取节点，合并进基础规则与分组
+支持多源聚合</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-port'>port / socks-port</button><div id='s-port' class='item-body'><pre><code>本地 HTTP 代理端口 / SOCKS5 端口
+用于浏览器与系统代理接入</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-allow-lan'>allow-lan / bind-address</button><div id='s-allow-lan' class='item-body'><pre><code>是否允许局域网访问代理
+绑定监听地址（*、具体 IPv4/IPv6）
+仅在 allow-lan 为 true 时生效</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-mode'>mode</button><div id='s-mode' class='item-body'><pre><code>规则模式：Rule / Global / Direct
+Rule：按规则分流（推荐）
+Global：全局代理
+Direct：全局直连</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-log-level'>log-level</button><div id='s-log-level' class='item-body'><pre><code>日志级别：silent / info / warning / error / debug
+级别越高输出越多，越偏向调试</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-ipv6'>ipv6</button><div id='s-ipv6' class='item-body'><pre><code>是否在解析时返回 IPv6 地址
+false 时将避免 AAAA 记录带来的连接问题</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-external-controller'>external-controller / secret</button><div id='s-external-controller' class='item-body'><pre><code>Clash RESTful API 地址与口令
+用于外部面板（如 dashboard）控制与查询</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-hosts'>hosts</button><div id='s-hosts' class='item-body'><pre><code>静态域名解析表（支持通配符）
+在 dns.enhanced-mode=redir-host 及 use-hosts=true 时生效</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-dns'>dns</button><div id='s-dns' class='item-body'><pre><code>本地 DNS 服务配置：enable、listen、ipv6
+default-nameserver：系统基础解析器
+enhanced-mode：fake-ip 或 redir-host
+fake-ip-range：Fake IP 池 CIDR
+use-hosts：查询并返回 hosts 记录
+nameserver：首选 DoH/UDP/TCP 解析器
+fallback：备用解析器（非 CN 或命中过滤时采用）
+fallback-filter：按 geoip/ipcidr 判定结果有效性</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-proxies'>proxies</button><div id='s-proxies' class='item-body'><pre><code>静态手动节点示例（如 ss、vmess、trojan 等）
+包含 name、type、server、port、认证等字段</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-proxy-groups'>proxy-groups</button><div id='s-proxy-groups' class='item-body'><pre><code>代理分组定义：select / url-test / fallback / load-balance 等
+用于按国家/场景构建可选/测速/容错/负载的分组</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-proxy-providers'>proxy-providers</button><div id='s-proxy-providers' class='item-body'><pre><code>服务器节点订阅提供者定义
+type=http/file、path/url、interval、health-check
+用于自动拉取并更新节点列表</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-rule-providers'>rule-providers</button><div id='s-rule-providers' class='item-body'><pre><code>规则提供者定义：behavior=classical/domain/ipcidr
+type=http/file、url、path、interval
+从各项目拉取分类规则（如 YouTube/Netflix/Telegram 等）</code></pre></div></div>
+          <div class='item'><button class='item-header' data-target='s-rules'>rules</button><div id='s-rules' class='item-body'><pre><code>实际分流规则清单（DOMAIN-SUFFIX / DOMAIN-KEYWORD 等）
+匹配到的域名按指定分组或动作（如 美国 / Proxy / DIRECT / REJECT）处理</code></pre></div></div>
+        </div>
       </div>
     </div>
   </div>
