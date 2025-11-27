@@ -3,8 +3,8 @@
 base-config:
   #  - name: name
   #    url: url
-  - name: CrazyBunQnQ
-    url: "https://raw.githubusercontent.com/CrazyBunQnQ/SS-Rule-Snippet/baozi/LAZY_RULES/advanced.yaml"
+  # - name: CrazyBunQnQ
+  #   url: "https://raw.githubusercontent.com/CrazyBunQnQ/SS-Rule-Snippet/baozi/LAZY_RULES/advanced.yaml"
 
 # 不想要的节点 name, 支持正则表达式
 filter-proxy-name:
