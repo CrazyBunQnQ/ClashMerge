@@ -1,4 +1,4 @@
-## parseAndCombineMyClashRules
+## Clash Merge
 
 ### 简介
 
@@ -158,3 +158,13 @@ python main.py 6789
 - [原作者 crazyhl](https://github.com/crazyhl/PullAndMergeConfig)
 - [Hackl0us](https://github.com/Hackl0us)
 - [ConnersHua](https://github.com/ConnersHua)
+
+---
+
+### TODO
+
+- [ ] 支持更多协议（vless、hysteria、tuic 等）
+- [ ] 添加客户端参数选择（OpenClash、ClashVerge、FlClash 等）
+- [ ] 根据客户端能力过滤协议节点（仅保留对应客户端支持的协议）
+- [ ] 在线编辑页面增强（快捷键保存、格式化 YAML、深色主题预设）
+- [ ] 增加 CI 检查（lint/type-check）与基础单元测试
