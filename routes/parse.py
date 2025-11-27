@@ -15,4 +15,4 @@ def parse_rule():
     proxy_arr, proxy_group_arr, proxy_name_arr, done2 = parser_service.get_proxies(user_config_map, request)
     if done2:
         return "获取代理信息失败", 500
-    return parser_service.output_clash(user_config_map, base_rule_map, proxy_arr or [], proxy_group_arr or [], proxy_name_arr or [])
+    return parser_service.output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, proxy_name_arr)
