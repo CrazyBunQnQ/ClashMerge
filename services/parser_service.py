@@ -252,14 +252,32 @@ def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, pro
     output_user_proxies_map = []
     if user_proxies:
         output_user_proxies_map.extend(user_proxies)
-    output_user_proxies_map.extend(proxy_arr)
+    output_user_proxies_map.extend(proxy_arr or [])
     output_config["proxies"] = output_user_proxies_map
     filter_proxy_group = user_config_map.get("filter-proxy-groups", [])
     output_proxy_group_map = []
+
     user_config_proxy_groups = user_config_map.get("proxy-groups")
     if user_config_proxy_groups:
         user_config_proxy_group_map_arr = parse_utils.generate_proxy_name_to_group(user_config_proxy_groups, proxy_name_arr, filter_proxy_group)
         output_proxy_group_map.extend(user_config_proxy_group_map_arr)
+
+    base_proxy_groups = base_rule_map.get("proxy-groups", [])
+    if isinstance(base_proxy_groups, list) and base_proxy_groups:
+        for g in base_proxy_groups:
+            name = g.get("name")
+            if name and name in filter_proxy_group:
+                logger.info(f"过滤基础规则代理组: 组名={name}")
+                continue
+            output_proxy_group_map.append(g)
+
+    if isinstance(proxy_group_arr, list) and proxy_group_arr:
+        for g in proxy_group_arr:
+            name = g.get("name")
+            if name and name in filter_proxy_group:
+                logger.info(f"过滤订阅代理组: 组名={name}")
+                continue
+            output_proxy_group_map.append(g)
     def _dedupe_groups(groups):
         name_index = {}
         result = []
@@ -292,4 +310,3 @@ def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, pro
         return result
     output_config["proxy-groups"] = _dedupe_groups(output_proxy_group_map)
     return Response(yaml.dump(output_config, allow_unicode=True, sort_keys=False), mimetype='text/yaml')
-
