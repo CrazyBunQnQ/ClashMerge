@@ -86,20 +86,20 @@ def config_ui():
 此处添加的节点必然会添加到最终合并好的配置中，适用于自建节点</code></pre></div></div>
           <div class='item'><button class='item-header important' data-target='s-filter-proxy-name'>节点名过滤（filter-proxy-name）</button><div id='s-filter-proxy-name' class='item-body'><pre><code>按节点名称过滤，支持正则表达式
 匹配到的节点会被剔除，不参与生成与分组</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-filter-proxy-server'>节点服务器过滤（filter-proxy-server）</button><div id='s-filter-proxy-server' class='item-body'><pre><code>按节点 server 值过滤（域名或 IP 片段）
-用于排除不可信或不需要的节点来源</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-filter-proxy-providers'>订阅提供者过滤（filter-proxy-providers）</button><div id='s-filter-proxy-providers' class='item-body'><pre><code>按订阅提供者名称过滤
-用于忽略指定的 provider（例如测试源或无效源）</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-filter-proxy-groups'>分组过滤（filter-proxy-groups）</button><div id='s-filter-proxy-groups' class='item-body'><pre><code>按代理组名称过滤
-剔除不需要的分组，避免生成后出现冗余组</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-proxy-providers'>节点订阅提供者（proxy-providers）</button><div id='s-proxy-providers' class='item-body'><pre><code>服务器节点订阅提供者定义
-type=http/file、path/url、interval、health-check
-用于自动拉取并更新节点列表</code></pre></div></div>
-          <div class='item'><button class='item-header important' data-target='s-rules'>分流规则（rules）</button><div id='s-rules' class='item-body'><pre><code>实际分流规则清单（DOMAIN-SUFFIX / DOMAIN-KEYWORD 等）
+          <div class='item'><button class='item-header important' data-target='s-rules'>分流规则（rules）- 有什么网站你访问不聊了，在这里最前面加规则</button><div id='s-rules' class='item-body'><pre><code>实际分流规则清单（DOMAIN-SUFFIX / DOMAIN-KEYWORD 等）
 匹配到的域名按指定分组或动作（如 美国 / Proxy / DIRECT / REJECT）处理</code></pre></div></div>
         </div>
         <div class='ref-title'>次要配置(可保持默认或从你原来的订阅源里拷贝过来)</div>
         <div class='accordion'>
+          <div class='item'><button class='item-header important' data-target='s-filter-proxy-server'>节点服务器过滤（filter-proxy-server）</button><div id='s-filter-proxy-server' class='item-body'><pre><code>按节点 server 值过滤（域名或 IP 片段）
+用于排除不可信或不需要的节点来源</code></pre></div></div>
+          <div class='item'><button class='item-header important' data-target='s-proxy-providers'>节点订阅提供者（proxy-providers）</button><div id='s-proxy-providers' class='item-body'><pre><code>服务器节点订阅提供者定义
+type=http/file、path/url、interval、health-check
+用于自动拉取并更新节点列表</code></pre></div></div>
+          <div class='item'><button class='item-header important' data-target='s-filter-proxy-providers'>订阅提供者过滤（filter-proxy-providers）</button><div id='s-filter-proxy-providers' class='item-body'><pre><code>按订阅提供者名称过滤
+用于忽略指定的 provider（例如测试源或无效源）</code></pre></div></div>
+          <div class='item'><button class='item-header important' data-target='s-filter-proxy-groups'>分组过滤（filter-proxy-groups）</button><div id='s-filter-proxy-groups' class='item-body'><pre><code>按代理组名称过滤
+剔除不需要的分组，避免生成后出现冗余组</code></pre></div></div>
           <div class='item'><button class='item-header' data-target='s-base-config'>base-config</button><div id='s-base-config' class='item-body'><pre><code>基础规则源列表(可以不配置)
 每项包含 name、url
 作为生成最终 Clash 配置的基础规则，后续拉取的代理与覆盖参数会合并到此</code></pre></div></div>
