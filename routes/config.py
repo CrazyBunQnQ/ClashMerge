@@ -111,14 +111,14 @@ def config_ui():
     <div class='header'>在线编辑配置 <button id='theme' class='ghost'>切换主题</button></div>
     <div class='content'>
       <div class='row'>
-        <input id='name' type='text' placeholder='文件名，不含后缀' value='{name}'>
+        <input id='name' type='text' placeholder='配置名称, 可加载参考配置 template' value='{name}'>
         <button id='load' class='secondary'>加载</button>
         <button id='save'>保存</button>
       </div>
       <textarea id='content' placeholder='在此粘贴或编辑 YAML 配置'>{text}</textarea>
       <div id='status' class='status'></div>
       <div class='ref'>
-        <div class='ref-title'>参考配置示例（template.yaml）</div>
+        <div class='ref-title'>参考配置示例（template）</div>
         <div class='accordion'>{section_html}</div>
       </div>
     </div>
