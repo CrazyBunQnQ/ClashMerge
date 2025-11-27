@@ -1,4 +1,5 @@
 from flask import Blueprint, request, Response
+import os
 import logging
 from services import config_service
 
@@ -17,6 +18,8 @@ def load_config():
 @config_bp.route("/config/save", methods=["POST"])
 def save_config():
     name = request.args.get("name") or request.form.get("name")
+    if name and name.strip().lower() == "template":
+        return "不可保存模板文件", 400
     content = request.form.get("content")
     if content is None:
         content = request.get_data(as_text=True)
@@ -33,6 +36,47 @@ def config_ui():
         loaded, err = config_service.load_config_text(name)
         if err is None and loaded is not None:
             text = loaded
+    tpl_path = os.path.abspath(os.path.join(os.getcwd(), "config", "template.yaml"))
+    if not os.path.exists(tpl_path):
+        tpl_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config", "template.yaml"))
+    tpl_text = ""
+    try:
+        with open(tpl_path, "r", encoding="utf-8") as f:
+            tpl_text = f.read()
+    except Exception:
+        tpl_text = ""
+
+    def _split_sections(raw):
+        sections = []
+        if not raw:
+            return sections
+        lines = raw.splitlines()
+        current_key = None
+        current_buf = []
+        def flush():
+            if current_key is not None:
+                sections.append((current_key, "\n".join(current_buf)))
+        for ln in lines:
+            if ln and not ln.startswith(" ") and not ln.startswith("\t") and not ln.startswith("#") and ":" in ln:
+                idx = ln.find(":")
+                key = ln[:idx].strip()
+                if key and key.replace("-", "").replace("_", "").isalnum():
+                    flush()
+                    current_key = key
+                    current_buf = [ln]
+                    continue
+            if current_key is None:
+                # skip leading comments until first key
+                continue
+            current_buf.append(ln)
+        flush()
+        return sections
+
+    tpl_sections = _split_sections(tpl_text)
+    section_items = []
+    for i, (k, v) in enumerate(tpl_sections):
+        section_items.append(f"<div class='item'><button class='item-header' data-target='s{i}'>{k}</button><div id='s{i}' class='item-body'><pre><code>{v}</code></pre></div></div>")
+    section_html = "".join(section_items)
     html = f"""
 <!DOCTYPE html>
 <html>
@@ -53,6 +97,13 @@ def config_ui():
     button.ghost {{ border-color:var(--border); background:transparent; color:var(--text); }}
     textarea {{ width:100%; height:420px; padding:10px; border:1px solid var(--border); background:transparent; color:var(--text); border-radius:8px; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono'; font-size:13px; line-height:1.5; resize:vertical; }}
     .status {{ margin-top:10px; min-height:24px; font-size:13px; color:var(--muted); }}
+    .ref {{ margin-top:20px; padding-top:16px; border-top:1px dashed var(--border); }}
+    .ref-title {{ font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:8px; }}
+    .accordion {{ display:flex; flex-direction:column; gap:10px; }}
+    .item {{ border:1px solid var(--border); border-radius:8px; overflow:hidden; }}
+    .item-header {{ width:100%; text-align:left; background:transparent; border:none; padding:10px 12px; color:var(--text); cursor:pointer; }}
+    .item-body {{ display:none; border-top:1px solid var(--border); }}
+    pre {{ margin:0; padding:10px 12px; overflow:auto; }}
   </style>
 </head>
 <body>
@@ -66,6 +117,10 @@ def config_ui():
       </div>
       <textarea id='content' placeholder='在此粘贴或编辑 YAML 配置'>{text}</textarea>
       <div id='status' class='status'></div>
+      <div class='ref'>
+        <div class='ref-title'>参考配置示例（template.yaml）</div>
+        <div class='accordion'>{section_html}</div>
+      </div>
     </div>
   </div>
   <script>
@@ -93,6 +148,7 @@ def config_ui():
       const n = nameInput.value.trim();
       const t = contentEl.value;
       if (!n) {{ setStatus('请输入文件名', false); return; }}
+      if (n.toLowerCase() === 'template') {{ setStatus('不可保存模板文件', false); return; }}
       try {{
         const r = await fetch('/config/save?name=' + encodeURIComponent(n), {{ method: 'POST', headers: {{ 'Content-Type': 'text/plain' }}, body: t }});
         const b = await r.text();
@@ -104,6 +160,14 @@ def config_ui():
     document.getElementById('save').addEventListener('click', save);
     themeBtn.addEventListener('click', () => {{ applyTheme(document.body.getAttribute('data-theme')==='dark' ? 'light' : 'dark'); }});
     if (qs.get('name')) {{ load(); }}
+    document.querySelectorAll('.item-header').forEach(btn => {{
+      btn.addEventListener('click', () => {{
+        const id = btn.getAttribute('data-target');
+        const body = document.getElementById(id);
+        const show = body.style.display !== 'block';
+        body.style.display = show ? 'block' : 'none';
+      }});
+    }});
   </script>
 </body>
 </html>

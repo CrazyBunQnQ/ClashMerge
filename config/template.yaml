@@ -4,7 +4,7 @@ base-config:
   #  - name: name
   #    url: url
   - name: CrazyBunQnQ
-    url: "https://raw.githubusercontent.com/CrazyBunQnQ/SS-Rule-Snippet/dev/LAZY_RULES/clash.yaml"
+    url: "https://raw.githubusercontent.com/CrazyBunQnQ/SS-Rule-Snippet/baozi/LAZY_RULES/advanced.yaml"
 
 # 不想要的节点 name, 支持正则表达式
 filter-proxy-name:
