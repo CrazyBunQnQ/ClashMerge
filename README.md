@@ -1,8 +1,5 @@
 ## parseAndCombineMyClashRules
 
-### 特别鸣谢
-[![jetbrains](jetbrains-variant-2.svg)](https://www.jetbrains.com/?from=PullAndMergeConfig)
-
 ### 简介
 
 这是一个可以自动合并多个订阅的信息，到我们指定的基础 `clash` 配置文件库中的脚本。
@@ -16,6 +13,7 @@
 * [配置文件说明](#配置文件说明)
 * [使用方法](#使用方法)
 * [在线编辑](#在线编辑)
+* [Docker 构建与部署](#docker-构建与部署)
 * [特别说明](#特别说明)
 * [鸣谢](#鸣谢)
 
@@ -78,6 +76,31 @@
 - 对应接口：
   - 加载：`GET /config/load?name=<文件名>` 返回 YAML 文本
   - 保存：`POST /config/save?name=<文件名>` 请求体为 YAML 文本
+
+---
+
+### Docker 构建与部署
+
+1. 构建镜像
+   在项目根目录执行：
+   ```bash
+   docker build -t crazybun/mergevpn:2.0 .
+   ```
+
+2. 运行容器
+   将本地 `config` 目录挂载到容器内，以便读写配置文件：
+   ```bash
+   cd /root/MergeVPN
+   docker run -itd --name mergevpn --restart always -e TZ=Asia/Shanghai -v $(pwd)/config:/app/config -v $(pwd)/log:/app/log -p 6789:6789 crazybun/mergevpn:2.0
+   ```
+
+3. 验证服务
+   - 解析接口：`http://localhost:6789/parse?name=template&baseName=clash-config`
+   - 在线编辑：`http://localhost:6789/config/ui`
+
+4. 常见问题
+   - 如果容器内未找到配置文件，请确认已挂载 `config` 目录，并且文件名不包含 `.yaml` 后缀。
+   - 日志输出在容器内 `/app/log/log.txt`，可通过 `docker logs pull-merge-config` 查看实时日志。
 
 例如: 
 
