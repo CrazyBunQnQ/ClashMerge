@@ -45,13 +45,12 @@ def parse_request_params(req):
             if not found:
                 logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 基础配置未找到: 名称={base_config_name}")
                 return None, None, True
+        # 当提供了 baseName 但未能解析到 URL 时，认为错误
+        if not base_config_request_url:
+            logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 未找到基础规则源")
+            return None, None, True
     else:
-        logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 未提供基础规则名称")
-        return None, None, True
-
-    if not base_config_request_url:
-        logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 未找到基础规则源")
-        return None, None, True
+        logger.info("未提供基础规则名称，使用内置基础规则模板")
 
     base_rule_body = """#---------------------------------------------------#
 ## 配置文件需要放置在 $HOME/.config/clash/config.yml
