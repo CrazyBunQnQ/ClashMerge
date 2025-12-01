@@ -206,57 +206,171 @@ proxy-groups:
   - name: "代理"
     type: select
     proxies:
-      - 日本-自建
-      - 美国-自建
+      - 自动代理
   # url-test 可以自动代理与指定 URL 测速后，延迟最短的服务器
-  - name: "电报消息"
-    type: select
+  - name: "自动代理"
+    type: url-test
     proxies:
-      - 代理
-      - DIRECT
-      - 日本-自建
-      - 美国-自建
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 500
   - name: "BiliBili"
     type: select
     proxies:
       - DIRECT
       - 代理
-      - 日本-自建
-      - 美国-自建
       - regex: "[港澳台]"
+  - name: "YouTube"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - regex: "no any other node"
+  - name: "TikTok"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - regex: "no any other node"
+  - name: "Netflix"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - regex: "no any other node"
+  - name: "Disney+"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - regex: "no any other node"
+  - name: "Emby"
+    type: select
+    proxies:
+      - 代理
+      - DIRECT
+      - regex: "no any other node"
+  - name: "隐私防护"
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      - 代理
+      - regex: "no any other node"
   - name: "游戏平台"
     type: select
     proxies:
       - DIRECT
       - 代理
-      - 日本-自建
-      - 美国-自建
+      - regex: "[港澳台日美]"
+  - name: "Nintendo"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "[港澳台日美]"
+  - name: "Steam"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "[港台美]"
+  - name: "Epic"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "[美]"
+  - name: "加密货币"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "[日港澳台韩新]"
+  - name: "下载平台"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "no any other node"
+  - name: "BT种子"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "no any other node"
+  - name: "国内流量"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "no any other node"
+  - name: "广告拦截"
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      - regex: "no any other node"
+  - name: "漏网之鱼"
+    type: select
+    proxies:
+      - 代理
+      - 自动代理
+      - DIRECT
+      - regex: "no any other node"
   - name: "ChatGPT"
     type: select
     proxies:
       - DIRECT
-      - 美国-自建
-      - regex: "[美]"
+      - regex: "[美日]"
+  - name: "香港节点"
+    type: select
+    proxies:
+      - DIRECT
+      - regex: "[港澳台]"
   - name: "日本节点"
     type: select
     proxies:
       - DIRECT
-      - 日本-自建
-      - 美国-自建
       - regex: "[日]"
   - name: "美国节点"
     type: select
     proxies:
       - DIRECT
-      - 美国-自建
-      - 日本-自建
       - regex: "[美]"
+  - name: "台湾节点"
+    type: select
+    proxies:
+      - DIRECT
+      - regex: "[港澳台]"
+  - name: "新加坡节点"
+    type: select
+    proxies:
+      - DIRECT
+      - regex: "[新]"
+  - name: "欧洲节点"
+    type: select
+    proxies:
+      - DIRECT
+  - name: "社交平台IP归属地"
+    type: select
+    proxies:
+      - DIRECT
+      - 代理
+      - regex: "no any other node"
+  - name: "冒险岛N"
+    type: select
+    proxies:
+      - DIRECT
+      - regex: "[港台]"
+  - name: "其他地区"
+    type: select
+    proxies:
+      - DIRECT
   #  # fallback 可以尽量按照用户书写的服务器顺序，在确保服务器可用的情况下，自动选择服务器
   - name: "故障转移"
     type: fallback
     proxies:
-      - 日本-自建
-      - 美国-自建
+      - 自动代理
     url: 'http://www.gstatic.com/generate_204'
     interval: 500
   # 代理的转发链, 在 proxies 中不应该包含 relay. 不支持 UDP.
