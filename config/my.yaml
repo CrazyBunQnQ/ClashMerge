@@ -9,7 +9,7 @@ base-config:
 # 不想要的节点 name, 支持正则表达式
 filter-proxy-name:
 #  - "名称 name"
-  - "[马柬鲜色哈英波瑞葡卢俄乌土廷巴南印德泰菲尼]"
+  #- "[马柬鲜色哈英波瑞葡卢俄乌土廷巴南印德泰菲尼]"
   - "直连"
   - "套餐"
   - "流量"
@@ -223,6 +223,7 @@ proxy-groups:
       - 代理
       - 日本-自建
       - 美国-自建
+      - regex: "[港澳台]"
   - name: "游戏平台"
     type: select
     proxies:
@@ -235,18 +236,21 @@ proxy-groups:
     proxies:
       - DIRECT
       - 美国-自建
+      - regex: "[美]"
   - name: "日本节点"
     type: select
     proxies:
       - DIRECT
       - 日本-自建
       - 美国-自建
+      - regex: "[日]"
   - name: "美国节点"
     type: select
     proxies:
       - DIRECT
       - 美国-自建
       - 日本-自建
+      - regex: "[美]"
   #  # fallback 可以尽量按照用户书写的服务器顺序，在确保服务器可用的情况下，自动选择服务器
   - name: "故障转移"
     type: fallback

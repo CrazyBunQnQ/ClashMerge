@@ -280,13 +280,46 @@ def generate_proxy_name_to_group(proxy_groups, proxy_name_arr, filter_proxy_grou
         new_proxy_group = proxy_group.copy()
         
         if "use" not in new_proxy_group:
-            if "proxies" not in new_proxy_group or new_proxy_group["proxies"] is None:
-                new_proxy_group["proxies"] = list(proxy_name_arr)
+            proxies = new_proxy_group.get("proxies")
+            if proxies is None:
+                proxies = []
+            if not isinstance(proxies, list):
+                proxies = [proxies]
+
+            static_names = []
+            regex_list = []
+            for item in proxies:
+                if isinstance(item, dict) and "regex" in item:
+                    pattern = item.get("regex")
+                    if isinstance(pattern, str) and pattern:
+                        try:
+                            regex_list.append(re.compile(pattern))
+                        except Exception as e:
+                            logger.warning(f"代理组正则无效: 组名={new_proxy_group.get('name','')}, 模式={pattern}, 错误={e}")
+                elif isinstance(item, str):
+                    static_names.append(item)
+
+            matched = []
+            if regex_list:
+                for name in proxy_name_arr:
+                    for rgx in regex_list:
+                        try:
+                            if rgx.search(name):
+                                matched.append(name)
+                                break
+                        except Exception as e:
+                            logger.warning(f"代理组正则匹配异常: 组名={new_proxy_group.get('name','')}, 错误={e}")
             else:
-                # Ensure it's a list
-                if not isinstance(new_proxy_group["proxies"], list):
-                    new_proxy_group["proxies"] = [new_proxy_group["proxies"]]
-                new_proxy_group["proxies"].extend(proxy_name_arr)
+                matched = list(proxy_name_arr)
+
+            result = []
+            seen = set()
+            for n in static_names + matched:
+                if n not in seen:
+                    seen.add(n)
+                    result.append(n)
+
+            new_proxy_group["proxies"] = result
                 
         output_proxy_group_map.append(new_proxy_group)
         

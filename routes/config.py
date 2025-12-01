@@ -86,6 +86,14 @@ def config_ui():
 此处添加的节点必然会添加到最终合并好的配置中，适用于自建节点</code></pre></div></div>
           <div class='item'><button class='item-header important' data-target='s-filter-proxy-name'>节点名过滤（filter-proxy-name）</button><div id='s-filter-proxy-name' class='item-body'><pre><code>按节点名称过滤，支持正则表达式
 匹配到的节点会被剔除，不参与生成与分组</code></pre></div></div>
+          <div class='item'><button class='item-header important' data-target='s-proxy-groups'>proxy-groups</button><div id='s-proxy-groups' class='item-body'><pre><code>代理分组定义：select / url-test / fallback / load-balance 等
+用于按国家/场景构建可选/测速/容错/负载的分组
+
+分组 proxies 支持使用正则注入：在分组里添加条目形如
+  - regex: '<正则表达式>'
+将把订阅聚合的节点名中匹配该正则的节点自动注入到该分组
+若分组未配置任何 regex 条目，则会注入所有订阅节点
+分组中已写死的静态条目（如 DIRECT、自建节点名）会保留</code></pre></div></div>
           <div class='item'><button class='item-header important' data-target='s-rules'>分流规则（rules）- 有什么网站你访问不聊了，在这里最前面加规则</button><div id='s-rules' class='item-body'><pre><code>实际分流规则清单（DOMAIN-SUFFIX / DOMAIN-KEYWORD 等）
 匹配到的域名按指定分组或动作（如 美国 / Proxy / DIRECT / REJECT）处理</code></pre></div></div>
         </div>
@@ -126,8 +134,6 @@ use-hosts：查询并返回 hosts 记录
 nameserver：首选 DoH/UDP/TCP 解析器
 fallback：备用解析器（非 CN 或命中过滤时采用）
 fallback-filter：按 geoip/ipcidr 判定结果有效性</code></pre></div></div>
-          <div class='item'><button class='item-header' data-target='s-proxy-groups'>proxy-groups</button><div id='s-proxy-groups' class='item-body'><pre><code>代理分组定义：select / url-test / fallback / load-balance 等
-用于按国家/场景构建可选/测速/容错/负载的分组</code></pre></div></div>
           <div class='item'><button class='item-header' data-target='s-rule-providers'>rule-providers</button><div id='s-rule-providers' class='item-body'><pre><code>规则提供者定义：behavior=classical/domain/ipcidr
 type=http/file、url、path、interval
 从各项目拉取分类规则（如 YouTube/Netflix/Telegram 等）</code></pre></div></div>
