@@ -172,6 +172,7 @@ def get_proxies(user_config_map, req):
     proxy_arr = []
     proxy_group_arr = []
     proxy_name_arr = []
+    failed_sources = []
 
     with ThreadPoolExecutor(max_workers=len(pull_proxy_source)) as executor:
         future_to_source = {executor.submit(process_proxy_source, source, user_config_map, req): source for source in pull_proxy_source}
@@ -179,15 +180,20 @@ def get_proxies(user_config_map, req):
             source = future_to_source[future]
             try:
                 p_arr, pg_map, pn_arr = future.result()
-                if p_arr:
-                    proxy_arr.extend(p_arr)
-                if pg_map:
-                    proxy_group_arr.append(pg_map)
-                if pn_arr:
-                    proxy_name_arr.extend(pn_arr)
+                if not p_arr or not pg_map or not pn_arr:
+                    failed_sources.append(source.get("name"))
+                    logger.error(f"订阅源异常: 名称={source.get('name')}, 合并结果为空")
+                    continue
+                proxy_arr.extend(p_arr)
+                proxy_group_arr.append(pg_map)
+                proxy_name_arr.extend(pn_arr)
             except Exception as exc:
+                failed_sources.append(source.get("name"))
                 logger.error(f"订阅源异常: 名称={source.get('name')}, 错误={exc}")
 
+    if failed_sources:
+        logger.error(f"订阅源合并失败，失败源={','.join([s for s in failed_sources if s])}")
+        return None, None, None, True
     return proxy_arr, proxy_group_arr, proxy_name_arr, False
 
 def process_proxy_source(proxy_source, user_config_map, req):
@@ -204,24 +210,19 @@ def process_proxy_source(proxy_source, user_config_map, req):
     filter_proxy_name = user_config_map.get("filter-proxy-name", [])
     filter_proxy_server = user_config_map.get("filter-proxy-server", [])
 
-    decoded_content = parse_utils.get_base64_decode(content.decode('utf-8', errors='ignore'))
-
-    if decoded_content is None:
-        yaml_proxy_arr, err = parse_utils.parse_yaml_proxy(content, filter_proxy_name, filter_proxy_server)
-        if err:
-            logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 订阅地址: {url}, 解析为 Base64 或 YAML 失败")
-            return None, None, None
-        proxy_group_map, temp_proxy_name_arr = parse_utils.generate_group_and_proxy_name_arr(yaml_proxy_arr, name)
-        if proxy_group_map.get("proxies"):
-            return yaml_proxy_arr, proxy_group_map, temp_proxy_name_arr
-        return None, None, None
-
     base64_proxy_arr, err = parse_utils.parse_base64_proxy(content, filter_proxy_name, filter_proxy_server)
-    if err:
+    if err is None:
+        proxy_group_map, temp_proxy_name_arr = parse_utils.generate_group_and_proxy_name_arr(base64_proxy_arr, name)
+        if proxy_group_map.get("proxies"):
+            return base64_proxy_arr, proxy_group_map, temp_proxy_name_arr
+
+    yaml_proxy_arr, yerr = parse_utils.parse_yaml_proxy(content, filter_proxy_name, filter_proxy_server)
+    if yerr:
+        logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 订阅地址: {url}, 解析订阅失败")
         return None, None, None
-    proxy_group_map, temp_proxy_name_arr = parse_utils.generate_group_and_proxy_name_arr(base64_proxy_arr, name)
+    proxy_group_map, temp_proxy_name_arr = parse_utils.generate_group_and_proxy_name_arr(yaml_proxy_arr, name)
     if proxy_group_map.get("proxies"):
-        return base64_proxy_arr, proxy_group_map, temp_proxy_name_arr
+        return yaml_proxy_arr, proxy_group_map, temp_proxy_name_arr
     return None, None, None
 
 def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, proxy_name_arr):

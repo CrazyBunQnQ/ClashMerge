@@ -21,11 +21,11 @@ def get_config_field_value(field_name, user_config_map, base_rule_config_map):
     return None
 
 def get_config_field_merge_value_arr(field_name, user_config_map, base_rule_config_map):
-    # 数组字段合并：将用户配置或基础规则中的列表合并（保持顺序）
+    # 数组字段合并：同时合并用户与基础规则（用户配置在前以提高优先级）
     value_slice = []
     if user_config_map and field_name in user_config_map and user_config_map[field_name]:
         value_slice.extend(user_config_map[field_name])
-    elif base_rule_config_map and field_name in base_rule_config_map and base_rule_config_map[field_name]:
+    if base_rule_config_map and field_name in base_rule_config_map and base_rule_config_map[field_name]:
         value_slice.extend(base_rule_config_map[field_name])
     return value_slice
 

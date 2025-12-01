@@ -26,12 +26,10 @@ def get_base64_decode(s):
         return None
 
 def parse_base64_proxy(proxy_body, filter_proxy_name, filter_proxy_server):
-    # 解析 Base64 订阅并进行过滤
     try:
         base64_proxy_arr = parse_base64_proxy_arr(proxy_body)
-        if not base64_proxy_arr:
+        if base64_proxy_arr is None:
             return None, Exception("订阅代理信息 Base64 解析失败")
-        
         filter_proxy_arr = filter_un_add_proxy_server(base64_proxy_arr, filter_proxy_name, filter_proxy_server)
         return filter_proxy_arr, None
     except Exception as e:
