@@ -84,14 +84,14 @@
 1. 构建镜像
    在项目根目录执行：
    ```bash
-   docker build -t crazybun/mergevpn:2.1 .
+   docker build -t crazybun/mergevpn:2.3 .
    ```
 
 2. 运行容器
    将本地 `config` 目录挂载到容器内，以便读写配置文件：
    ```bash
    cd /root/MergeVPN
-   docker run -itd --name mergevpn --restart always -e TZ=Asia/Shanghai -v $(pwd)/config:/app/config -v $(pwd)/log:/app/log -p 6789:6789 crazybun/mergevpn:2.1
+   docker run -itd --name mergevpn --restart always -e TZ=Asia/Shanghai -v $(pwd)/config:/app/config -v $(pwd)/log:/app/log -p 6789:6789 crazybun/mergevpn:2.3
    ```
 
 3. 验证服务
