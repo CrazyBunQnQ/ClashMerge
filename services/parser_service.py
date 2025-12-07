@@ -3,7 +3,6 @@ import sys
 import yaml
 import logging
 from flask import Response
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -174,26 +173,26 @@ def get_proxies(user_config_map, req):
     proxy_name_arr = []
     failed_sources = []
 
-    with ThreadPoolExecutor(max_workers=len(pull_proxy_source)) as executor:
-        future_to_source = {executor.submit(process_proxy_source, source, user_config_map, req): source for source in pull_proxy_source}
-        for future in as_completed(future_to_source):
-            source = future_to_source[future]
-            try:
-                p_arr, pg_map, pn_arr = future.result()
-                if not p_arr or not pg_map or not pn_arr:
-                    failed_sources.append(source.get("name"))
-                    logger.error(f"订阅源异常: 名称={source.get('name')}, 合并结果为空")
-                    continue
-                proxy_arr.extend(p_arr)
-                proxy_group_arr.append(pg_map)
-                proxy_name_arr.extend(pn_arr)
-            except Exception as exc:
+    for source in pull_proxy_source:
+        try:
+            p_arr, pg_map, pn_arr = process_proxy_source(source, user_config_map, req)
+            if not p_arr or not pg_map or not pn_arr:
                 failed_sources.append(source.get("name"))
-                logger.error(f"订阅源异常: 名称={source.get('name')}, 错误={exc}")
+                logger.error(f"订阅源异常: 名称={source.get('name')}, 合并结果为空")
+                continue
+            proxy_arr.extend(p_arr)
+            proxy_group_arr.append(pg_map)
+            proxy_name_arr.extend(pn_arr)
+        except Exception as exc:
+            failed_sources.append(source.get("name"))
+            logger.error(f"订阅源异常: 名称={source.get('name')}, 错误={exc}")
 
-    if failed_sources:
-        logger.error(f"订阅源合并失败，失败源={','.join([s for s in failed_sources if s])}")
+    if not proxy_arr and not proxy_group_arr and not proxy_name_arr:
+        if failed_sources:
+            logger.error(f"订阅源合并失败，失败源={','.join([s for s in failed_sources if s])}")
         return None, None, None, True
+    if failed_sources:
+        logger.warning(f"部分订阅源处理失败，失败源={','.join([s for s in failed_sources if s])}")
     return proxy_arr, proxy_group_arr, proxy_name_arr, False
 
 def process_proxy_source(proxy_source, user_config_map, req):
