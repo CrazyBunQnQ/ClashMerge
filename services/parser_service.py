@@ -164,14 +164,14 @@ dns:
     return user_config_map, base_rule_map, False
 
 def get_proxies(user_config_map, req):
-    pull_proxy_source = user_config_map.get("pull-proxy-source")
-    if not pull_proxy_source:
-        return None, None, None, True
-
     proxy_arr = []
     proxy_group_arr = []
     proxy_name_arr = []
     failed_sources = []
+
+    pull_proxy_source = user_config_map.get("pull-proxy-source")
+    if not pull_proxy_source:
+        return proxy_arr, proxy_group_arr, proxy_name_arr, False
 
     for source in pull_proxy_source:
         try:
@@ -190,7 +190,7 @@ def get_proxies(user_config_map, req):
     if not proxy_arr and not proxy_group_arr and not proxy_name_arr:
         if failed_sources:
             logger.error(f"订阅源合并失败，失败源={','.join([s for s in failed_sources if s])}")
-        return None, None, None, True
+        return proxy_arr, proxy_group_arr, proxy_name_arr, False
     if failed_sources:
         logger.warning(f"部分订阅源处理失败，失败源={','.join([s for s in failed_sources if s])}")
     return proxy_arr, proxy_group_arr, proxy_name_arr, False
