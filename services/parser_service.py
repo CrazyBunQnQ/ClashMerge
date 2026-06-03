@@ -3,6 +3,7 @@ import sys
 import yaml
 import logging
 from flask import Response
+from requests.exceptions import SSLError
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -199,7 +200,15 @@ def process_proxy_source(proxy_source, user_config_map, req):
     url = proxy_source.get("url")
     name = proxy_source.get("name")
 
-    content = http_utils.http_get(url)
+    try:
+        content = http_utils.http_get(url, log_error=False, raise_error=True)
+    except SSLError:
+        logger.warning(f"订阅源证书校验失败后尝试跳过校验: 名称={name}, 地址={url}")
+        content = http_utils.http_get(url, verify=False)
+    except Exception as exc:
+        logger.error(f"请求订阅失败: url={url}, 错误={exc}")
+        content = None
+
     if content is None:
         logger.error(f"请求URL: {req.url}, IP: {http_utils.get_request_ip(req)}, 订阅地址: {url}, 拉取订阅失败")
         return None, None, None
@@ -309,3 +318,4 @@ def output_clash(user_config_map, base_rule_map, proxy_arr, proxy_group_arr, pro
         return result
     output_config["proxy-groups"] = _dedupe_groups(output_proxy_group_map)
     return Response(yaml.dump(output_config, allow_unicode=True, sort_keys=False), mimetype='text/yaml')
+
