@@ -5,3 +5,5 @@ config/*
 !config/.config.yaml
 __pycache__
 .claude
+.omo
+docs/plans
