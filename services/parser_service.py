@@ -205,6 +205,9 @@ def process_proxy_source(proxy_source, user_config_map, req):
     except SSLError:
         logger.warning(f"订阅源证书校验失败后尝试跳过校验: 名称={name}, 地址={url}")
         content = http_utils.http_get(url, verify=False)
+        if content is None:
+            logger.warning(f"订阅源跳过证书校验仍失败，尝试保留域名大小写请求: 名称={name}, 地址={url}")
+            content = http_utils.http_get_preserve_host_case(url)
     except Exception as exc:
         logger.error(f"请求订阅失败: url={url}, 错误={exc}")
         content = None
