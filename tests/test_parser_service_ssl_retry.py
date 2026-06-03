@@ -32,10 +32,11 @@ class ProcessProxySourceSSLTests(unittest.TestCase):
         connection.getresponse.return_value = response
 
         with patch("utils.http_utils.http.client.HTTPSConnection", return_value=connection) as https_connection:
-            body = http_utils.http_get_preserve_host_case(SUBSCRIPTION_URL)
+            body = http_utils.http_get_preserve_host_case(SUBSCRIPTION_URL, timeout=5)
 
         self.assertEqual(CLASH_YAML, body)
         self.assertEqual("gQOW8QrZ.doggygo.top:8443", https_connection.call_args.args[0])
+        self.assertEqual(5, https_connection.call_args.kwargs["timeout"])
         connection.request.assert_called_once_with(
             "GET",
             "/api/v1/client/82304bb2242720508e758014e28483a3",
@@ -67,6 +68,7 @@ class ProcessProxySourceSSLTests(unittest.TestCase):
         self.assertEqual(2, requests_get.call_count)
         self.assertEqual(True, requests_get.call_args_list[0].kwargs["verify"])
         self.assertEqual(False, requests_get.call_args_list[1].kwargs["verify"])
+        self.assertEqual(5, requests_get.call_args_list[1].kwargs["timeout"])
 
     def test_does_not_disable_certificate_verification_for_non_ssl_errors(self):
         req = Mock(url="http://111174.best/parse?name=xAFieLqrRt6orh69Ugh")
@@ -109,7 +111,8 @@ class ProcessProxySourceSSLTests(unittest.TestCase):
         self.assertEqual("test-node", proxies[0]["name"])
         self.assertEqual(2, requests_get.call_count)
         self.assertEqual(False, requests_get.call_args_list[1].kwargs["verify"])
-        preserve_case_get.assert_called_once_with(SUBSCRIPTION_URL)
+        self.assertEqual(5, requests_get.call_args_list[1].kwargs["timeout"])
+        preserve_case_get.assert_called_once_with(SUBSCRIPTION_URL, timeout=5)
 
     def test_parse_route_outputs_subscription_after_ssl_retry(self):
         with tempfile.TemporaryDirectory() as tmpdir:

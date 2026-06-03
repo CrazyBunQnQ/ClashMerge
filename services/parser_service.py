@@ -12,6 +12,7 @@ from utils import http_utils
 from utils import parse_utils
 
 logger = logging.getLogger(__name__)
+SSL_FALLBACK_TIMEOUT = 5
 
 def parse_request_params(req):
     config_file_name = req.args.get("name")
@@ -204,10 +205,10 @@ def process_proxy_source(proxy_source, user_config_map, req):
         content = http_utils.http_get(url, log_error=False, raise_error=True)
     except SSLError:
         logger.warning(f"订阅源证书校验失败后尝试跳过校验: 名称={name}, 地址={url}")
-        content = http_utils.http_get(url, verify=False)
+        content = http_utils.http_get(url, verify=False, timeout=SSL_FALLBACK_TIMEOUT)
         if content is None:
             logger.warning(f"订阅源跳过证书校验仍失败，尝试保留域名大小写请求: 名称={name}, 地址={url}")
-            content = http_utils.http_get_preserve_host_case(url)
+            content = http_utils.http_get_preserve_host_case(url, timeout=SSL_FALLBACK_TIMEOUT)
     except Exception as exc:
         logger.error(f"请求订阅失败: url={url}, 错误={exc}")
         content = None

@@ -8,12 +8,12 @@ import requests
 logger = logging.getLogger(__name__)
 
 
-def http_get(url, verify=True, log_error=True, raise_error=False):
+def http_get(url, verify=True, log_error=True, raise_error=False, timeout=30):
     try:
         headers = {
             "User-Agent": "FlClash/v0.8.90 clash-verge"
         }
-        response = requests.get(url, headers=headers, timeout=30, verify=verify)
+        response = requests.get(url, headers=headers, timeout=timeout, verify=verify)
         response.raise_for_status()
         return response.content
     except Exception as e:
@@ -24,7 +24,7 @@ def http_get(url, verify=True, log_error=True, raise_error=False):
         return None
 
 
-def http_get_preserve_host_case(url):
+def http_get_preserve_host_case(url, timeout=30):
     parsed = urlsplit(url)
     if parsed.scheme != "https" or not parsed.netloc:
         logger.error(f"保留域名大小写请求失败: url={url}, 错误=仅支持 HTTPS URL")
@@ -39,7 +39,7 @@ def http_get_preserve_host_case(url):
         "Host": parsed.netloc,
     }
     context = ssl._create_unverified_context()
-    connection = http.client.HTTPSConnection(parsed.netloc, timeout=30, context=context)
+    connection = http.client.HTTPSConnection(parsed.netloc, timeout=timeout, context=context)
     try:
         connection.request("GET", path, headers=headers)
         response = connection.getresponse()
@@ -64,3 +64,4 @@ def get_request_ip(request):
         return forwarded
     
     return request.remote_addr
+
